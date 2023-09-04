@@ -1,8 +1,6 @@
 import HomeIcon from '@mui/icons-material/Home';
 import StoreIcon from '@mui/icons-material/Store';
 import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
-// import ShopIcon from '@mui/icons-material/Shop';
-import LoginIcon from '@mui/icons-material/Login';
 
 
 interface MenuItem {
@@ -30,18 +28,6 @@ export const menuItems: MenuItem[] = [
     path: "/cart",
     title: "Carrito",
     Icon: ShoppingCartCheckoutIcon
-  },
-  // {
-  //   id: "login",
-  //   path: "/login",
-  //   title: "Iniciar Sesión",
-  //   Icon: LoginIcon
-  // },
-  // {
-  //   id: "userOrders",
-  //   path: "/user-orders",
-  //   title: "Mis compras",
-  //   Icon: ShopIcon
-  // }
- 
+  }
+  
 ];
