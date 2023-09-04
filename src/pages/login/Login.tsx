@@ -22,7 +22,7 @@ import { collection, doc, getDoc } from "firebase/firestore";
 const Login: React.FC = () => {
 
 
-  const { handleLogin } =useContext(AuthContext)!;
+  const { handleLogin } = useContext(AuthContext)!;
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
