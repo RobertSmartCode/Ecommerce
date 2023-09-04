@@ -5,18 +5,27 @@ import Login from "../pages/login/Login";
 import Register from "../pages/register/Register";
 import ForgotPassword from "../pages/forgotPassword/ForgotPassword";
 import Dashboard from "../pages/dashboard/Dashboard";
+import UserOrders from "../pages/UserAccount/UserAccount";
 import ProtectedAdmin from "./ProtectedAdmin";
 import ProtectedUsers from "./ProtectedUsers";
 
+
 const AppRouter = () => {
   return (
+    
     <Routes>
+
+     {/* Para todos los usuarios */}
+      <Route element={<Navbar />}>
+        {routes.map(({ id, path, Element }) => (
+          <Route key={id} path={path} element={<Element />} />
+        ))}
+      </Route>
+
       {/* PARA LOS USUARIOS LOGEADOS */}
       <Route element={<ProtectedUsers />}>
         <Route element={<Navbar />}>
-          {routes.map(({ id, path, Element }) => (
-            <Route key={id} path={path} element={<Element />} />
-          ))}
+        <Route path="/user-orders" element={<UserOrders />} />
         </Route>
       </Route>
 

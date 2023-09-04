@@ -8,7 +8,7 @@ const ProtectedUsers: React.FC = () => {
 
   return (
     <>
-      {isLogged ? <Outlet /> : <Navigate to="/login" />}
+      {isLogged ? <Outlet/> : <Navigate to="/login" />}
     </>
   );
 };

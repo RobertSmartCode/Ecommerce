@@ -11,6 +11,7 @@ import {
   TextField,
   Tooltip,
   Typography,
+  useMediaQuery, // Importar useMediaQuery
 } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
 import { Link, useNavigate } from "react-router-dom";
@@ -20,8 +21,6 @@ import { db, loginGoogle, onSigIn } from "../../firebase/firebaseConfig";
 import { collection, doc, getDoc } from "firebase/firestore";
 
 const Login: React.FC = () => {
-
-
   const { handleLogin } = useContext(AuthContext)!;
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -30,7 +29,6 @@ const Login: React.FC = () => {
     setShowPassword(!showPassword);
   };
 
-  
   const [userCredentials, setUserCredentials] = useState({
     email: "",
     password: "",
@@ -70,20 +68,29 @@ const Login: React.FC = () => {
     navigate("/");
   };
 
+  // Usar useMediaQuery para detectar pantalla de escritorio
+  const isDesktop = useMediaQuery("(min-width:960px)");
+
   return (
     <Box
       sx={{
-        width: "100%",
-        minHeight: "100vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
+        padding: "20px", // Padding por defecto
+        maxWidth: "600px", // Ancho máximo del contenido
+        marginLeft: "auto", // Espacio a la izquierda
+        marginRight: "auto", // Espacio a la derecha
+        ...(isDesktop && {
+          paddingLeft: "400px", // Padding a la izquierda para escritorio
+          paddingRight: "400px", // Padding a la derecha para escritorio
+        }),
       }}
     >
       <form onSubmit={handleSubmit}>
         <Grid container rowSpacing={2} justifyContent={"center"}>
-          <Grid item xs={10} md={12}>
+          <Grid item xs={12} md={12}>
             <TextField
               name="email"
               label="Email"
@@ -91,7 +98,7 @@ const Login: React.FC = () => {
               onChange={handleChange}
             />
           </Grid>
-          <Grid item xs={10} md={12}>
+          <Grid item xs={12} md={12}>
             <FormControl variant="outlined" fullWidth>
               <InputLabel htmlFor="outlined-adornment-password">
                 Contraseña
@@ -127,7 +134,7 @@ const Login: React.FC = () => {
             ¿Olvidaste tu contraseña?
           </Link>
           <Grid container justifyContent="center" spacing={3} mt={2}>
-            <Grid item xs={10} md={5}>
+            <Grid item xs={12} md={5}>
               <Button
                 variant="contained"
                 fullWidth
@@ -141,8 +148,8 @@ const Login: React.FC = () => {
                 Ingresar
               </Button>
             </Grid>
-            <Grid item xs={10} md={5}>
-              <Tooltip title="ingresa con google">
+            <Grid item xs={12} md={5}>
+              <Tooltip title="Ingresa con Google">
                 <Button
                   variant="contained"
                   startIcon={<GoogleIcon />}
@@ -159,17 +166,17 @@ const Login: React.FC = () => {
                 </Button>
               </Tooltip>
             </Grid>
-            <Grid item xs={10} md={8}>
+            <Grid item xs={12} md={8}>
               <Typography
-                color={"secondary.primary"}
-                variant={"h6"}
+                color="secondary.primary"
+                variant="h6"
                 mt={1}
                 align="center"
               >
                 ¿Aún no tienes cuenta?
               </Typography>
             </Grid>
-            <Grid item xs={10} md={5}>
+            <Grid item xs={12} md={5}>
               <Tooltip title="Regístrate">
                 <Button
                   variant="contained"

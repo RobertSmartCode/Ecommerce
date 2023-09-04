@@ -9,6 +9,7 @@ import {
   InputLabel,
   OutlinedInput,
   TextField,
+  useMediaQuery
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -41,16 +42,23 @@ const Register: React.FC = () => {
     }
     navigate("/login");
   };
+  const isDesktop = useMediaQuery("(min-width:960px)");
 
   return (
     <Box
       sx={{
-        width: "100%",
-        minHeight: "100vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
+        padding: "20px", // Padding por defecto
+        maxWidth: "600px", // Ancho máximo del contenido
+        marginLeft: "auto", // Espacio a la izquierda
+        marginRight: "auto", // Espacio a la derecha
+        ...(isDesktop && {
+          paddingLeft: "400px", // Padding a la izquierda para escritorio
+          paddingRight: "400px", // Padding a la derecha para escritorio
+        }),
       }}
     >
       <form onSubmit={handleSubmit}>

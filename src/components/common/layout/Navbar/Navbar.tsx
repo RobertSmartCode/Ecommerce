@@ -8,11 +8,13 @@ import { logout } from "../../../../firebase/firebaseConfig";
 import { AuthContext } from "../../../../context/AuthContext";
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SvgIcon from "@mui/material/SvgIcon";
+import ShopIcon from '@mui/icons-material/Shop';
+import LoginIcon from '@mui/icons-material/Login';
 
 const drawerWidth = 200;
 
 function Navbar(props: any) {
-  const { logoutContext, user } = useContext(AuthContext)!;
+  const { logoutContext, isLogged, user } = useContext(AuthContext)!;
   const { window } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
@@ -40,7 +42,7 @@ function Navbar(props: any) {
                 <ListItemButton>
                   <ListItemIcon sx={{ color: "whitesmoke" }}>
                     <SvgIcon>
-                      <Icon/>
+                      <Icon />
                     </SvgIcon>
                   </ListItemIcon>
                   <ListItemText primary={title} sx={{ color: "whitesmoke" }} />
@@ -50,33 +52,55 @@ function Navbar(props: any) {
           );
         })}
 
-        {user.rol === rolAdmin && (
+        {!isLogged ? (
+          <Link to="/login">
+            <ListItem disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                  <LoginIcon sx={{ color: "whitesmoke" }} />
+                </ListItemIcon>
+                <ListItemText primary={"Iniciar sesión"} sx={{ color: "whitesmoke" }} />
+              </ListItemButton>
+            </ListItem>
+          </Link>
+        ) : null}
+
+        {isLogged && user.rol === rolAdmin && (
           <Link to="/dashboard">
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemIcon>
                   <DashboardIcon sx={{ color: "whitesmoke" }} />
                 </ListItemIcon>
-                <ListItemText
-                  primary={"Dashboard"}
-                  sx={{ color: "whitesmoke" }}
-                />
+                <ListItemText primary={"Dashboard"} sx={{ color: "whitesmoke" }} />
               </ListItemButton>
             </ListItem>
           </Link>
         )}
 
-        <ListItem disablePadding>
-          <ListItemButton onClick={handleLogout}>
-            <ListItemIcon>
-              <LogoutIcon sx={{ color: "whitesmoke" }} />
-            </ListItemIcon>
-            <ListItemText
-              primary={"Cerrar sesion"}
-              sx={{ color: "whitesmoke" }}
-            />
-          </ListItemButton>
-        </ListItem>
+        {isLogged && (
+          <Link to="/user-orders">
+            <ListItem disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                  <ShopIcon sx={{ color: "whitesmoke" }} />
+                </ListItemIcon>
+                <ListItemText primary={"Mis compras"} sx={{ color: "whitesmoke" }} />
+              </ListItemButton>
+            </ListItem>
+          </Link>
+        )}
+
+        {isLogged && (
+          <ListItem disablePadding>
+            <ListItemButton onClick={handleLogout}>
+              <ListItemIcon>
+                <LogoutIcon sx={{ color: "whitesmoke" }} />
+              </ListItemIcon>
+              <ListItemText primary={"Cerrar sesión"} sx={{ color: "whitesmoke" }} />
+            </ListItemButton>
+          </ListItem>
+        )}
       </List>
     </div>
   );
@@ -105,7 +129,7 @@ function Navbar(props: any) {
             edge="start"
             onClick={handleDrawerToggle}
           >
-            <MenuIcon color="secondary"/>
+            <MenuIcon color="secondary" />
           </IconButton>
         </Toolbar>
       </AppBar>
@@ -142,7 +166,6 @@ function Navbar(props: any) {
         }}
       >
         <Toolbar />
-
         <Outlet />
       </Box>
     </Box>
