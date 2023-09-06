@@ -30,6 +30,7 @@ function Navbar(props: any) {
   const { logoutContext, isLogged, user } = useContext(AuthContext)!;
   const { window } = props;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const navigate = useNavigate();
   const rolAdmin = import.meta.env.VITE_ROL_ADMIN;
 
@@ -37,18 +38,18 @@ function Navbar(props: any) {
   const handleDrawerToggle = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-  const handleLogout = () => {
-    logout();
-    logoutContext();
-    navigate("/login");
-  };
-  const [searchOpen, setSearchOpen] = useState(false);
 
   const toggleSearch = () => {
     setSearchOpen(!searchOpen);
   };
 
-  const [searchTerm, setSearchTerm] = useState(""); // Estado para el término de búsqueda
+  const handleLogout = () => {
+    logout();
+    logoutContext();
+    navigate("/login");
+  };
+
+  const [searchTerm, setSearchTerm] = useState(""); 
 
   
   const handleSearch = () => {
@@ -220,7 +221,7 @@ useEffect(() => {
   anchor="left"
   open={isMenuOpen}
   onClose={handleDrawerToggle}
-  onOpen={() => {}} // Función vacía
+  onOpen={() => {}} 
   container={container}
   sx={{
     display: { xs: "block" },
@@ -268,6 +269,7 @@ useEffect(() => {
         fullWidth
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
+        // onFocus={() => navigate("/search")}
         style={{
           color: "#000000", // Color del texto dentro del campo
           background: "white",

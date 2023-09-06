@@ -5,7 +5,7 @@ import Home from "../pages/home/Home";
 import ItemDetail from "../components/pageComponents/itemDetail/ItemDetail";
 import ItemListContainer from "../containers/itemlist/ItemListContainer";
 import UserOrders from "../components/pageComponents/userOrders/UserOrders";
-
+import Search from "../pages/search/Search";
 interface Route {
   id: string;
   path: string;
@@ -43,4 +43,9 @@ export const routes: Route[] = [
     path: "/user-orders",
     Element: UserOrders,
   },
+  {
+    id: "search",
+    path: "/search",
+    Element: Search,
+  }
 ];
