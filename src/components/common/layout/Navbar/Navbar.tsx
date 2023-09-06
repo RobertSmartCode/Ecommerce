@@ -61,6 +61,7 @@ function Navbar(props: any) {
 
   const [appBarHeight, setAppBarHeight] = useState<number | null>(null);
   const appBarRef = useRef<HTMLDivElement | null>(null); 
+  const [cartOpen, setCartOpen] = useState(false);
 
  
 
@@ -199,9 +200,16 @@ useEffect(() => {
     </IconButton>
 
     {/* Icono del carrito */}
-    <IconButton color="secondary" aria-label="shopping cart">
-      <ShoppingCartIcon />
+    <Link to="/cart" style={{ textDecoration: "none", color: "inherit" }}>
+    <IconButton
+      color="secondary"
+      aria-label="shopping cart"
+      onClick={() => setCartOpen(!cartOpen)}
+    >
+    <ShoppingCartIcon />
     </IconButton>
+    </Link>
+
   </div>
 </Toolbar>
 
