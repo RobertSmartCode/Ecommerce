@@ -1,16 +1,13 @@
-import { AppBar, Box, CssBaseline, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar } from "@mui/material";
+import { AppBar, Box, CssBaseline, IconButton, Toolbar } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import SvgIcon from "@mui/material/SvgIcon";
-import ShopIcon from '@mui/icons-material/Shop';
-import LoginIcon from '@mui/icons-material/Login';
-import LogoutIcon from "@mui/icons-material/Logout";
 import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import CloseIcon from "@mui/icons-material/Close";
 
 import InputBase from "@mui/material/InputBase";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+
+import DrawerContent from "../Drawer/Drawer"
 
 
 import { useRef, useEffect, useState, useContext } from "react";
@@ -19,7 +16,6 @@ import { useRef, useEffect, useState, useContext } from "react";
 
 
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import { menuItems } from "../../../../router/navigation";
 import { logout } from "../../../../firebase/firebaseConfig";
 import { AuthContext } from "../../../../context/AuthContext";
 
@@ -64,11 +60,6 @@ function Navbar(props: any) {
   const appBarRef = useRef<HTMLDivElement | null>(null); 
   const [cartOpen, setCartOpen] = useState(false);
 
- 
-
-
- 
-  
 useEffect(() => {
   // Obtener la altura de la AppBar una vez que esté renderizada
   if (appBarRef.current) {
@@ -78,83 +69,41 @@ useEffect(() => {
 }, []);
 
 
-  const drawer = (
-    <div>
-      <Toolbar />
+const container =
+window !== undefined ? () => window().document.body : undefined;
 
-      <List>
-        {menuItems.map(({ id, path, title, Icon }) => {
-          return (
-            <Link key={id} to={path} onClick={handleDrawerToggle}>
-              <ListItem disablePadding>
-                <ListItemButton>
-                  <ListItemIcon sx={{ color: "whitesmoke" }}>
-                    <SvgIcon>
-                      <Icon />
-                    </SvgIcon>
-                  </ListItemIcon>
-                  <ListItemText primary={title} sx={{ color: "whitesmoke" }} />
-                </ListItemButton>
-              </ListItem>
-            </Link>
-          );
-        })}
+const drawer = (
+  <SwipeableDrawer
+    anchor="left"
+    open={isMenuOpen}
+    onClose={handleDrawerToggle}
+    onOpen={() => {}}
+    container={container}
+    sx={{
+      display: { xs: "block" },
+      flexShrink: 0,
+      "& .MuiDrawer-paper": {
+        boxSizing: "border-box",
+        width: drawerWidth,
+        top: `${appBarRef.current?.clientHeight || 0}px`,
+        backgroundColor: "#1976d2",
+        height: "100%",
+        zIndex: 1300,
+      },
+    }}
+  >
+    {/* Utiliza el componente DrawerContent aquí */}
+    <DrawerContent
+      handleDrawerToggle={handleDrawerToggle}
+      isLogged={isLogged}
+      user={user}
+      rolAdmin={rolAdmin}
+      handleLogout={handleLogout}
+    />
+  </SwipeableDrawer>
+);
 
-        {!isLogged ? (
-          <Link to="/login">
-            <ListItem disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <LoginIcon sx={{ color: "whitesmoke" }} />
-                </ListItemIcon>
-                <ListItemText primary={"Iniciar sesión"} sx={{ color: "whitesmoke" }} />
-              </ListItemButton>
-            </ListItem>
-          </Link>
-        ) : null}
 
-        {isLogged && user.rol === rolAdmin && (
-          <Link to="/dashboard">
-            <ListItem disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <DashboardIcon sx={{ color: "whitesmoke" }} />
-                </ListItemIcon>
-                <ListItemText primary={"Dashboard"} sx={{ color: "whitesmoke" }} />
-              </ListItemButton>
-            </ListItem>
-          </Link>
-        )}
-
-        {isLogged && (
-          <Link to="/user-orders">
-            <ListItem disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <ShopIcon sx={{ color: "whitesmoke" }} />
-                </ListItemIcon>
-                <ListItemText primary={"Mis compras"} sx={{ color: "whitesmoke" }} />
-              </ListItemButton>
-            </ListItem>
-          </Link>
-        )}
-
-        {isLogged && (
-          <ListItem disablePadding>
-            <ListItemButton onClick={handleLogout}>
-              <ListItemIcon>
-                <LogoutIcon sx={{ color: "whitesmoke" }} />
-              </ListItemIcon>
-              <ListItemText primary={"Cerrar sesión"} sx={{ color: "whitesmoke" }} />
-            </ListItemButton>
-          </ListItem>
-        )}
-      </List>
-    </div>
-  );
-
-  const container =
-    window !== undefined ? () => window().document.body : undefined;
 
   return (
     <Box sx={{ display: "flex" }}>
