@@ -1,37 +1,44 @@
-import { AppBar, Box, CssBaseline, IconButton, Toolbar } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import SearchIcon from "@mui/icons-material/Search";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import CloseIcon from "@mui/icons-material/Close";
-
-
-import SearchBar from '../SearchBar/SearchBar'
-
-import SwipeableDrawer from "@mui/material/SwipeableDrawer";
-import DrawerContent from "../Drawer/Drawer"
-
-
 import { useRef, useEffect, useState, useContext } from "react";
+import {
+  IconButton,
+  Toolbar,
+  CssBaseline,
+  SwipeableDrawer,
+  AppBar,
+  Box,
+} from "@mui/material";
 
 
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
+import SearchIcon from "@mui/icons-material/Search";
 
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import { logout } from "../../../../firebase/firebaseConfig";
-import { AuthContext } from "../../../../context/AuthContext";
+
+import MobileMenuButton from "./MobileMenuButton/MobileMenuButton";
+import MobileLogo from "./MobileLogo/MobileLogo";
+import SearchBar from "./SearchBar/SearchBar";
+import MobileCart from "./ MobileCart/MobileCart"
 
 
-const drawerWidth = 411;
+import { logout } from "../../../../../firebase/firebaseConfig";
+import { AuthContext } from "../../../../../context/AuthContext";
 
-function Navbar(props: any) {
+
+ const MenuButtonWidth = 411;
+
+// Supongamos que tienes estas propiedades definidas en tu componente principal
+const NavbarMobile = (props:any) => {
+
   const { logoutContext, isLogged, user } = useContext(AuthContext)!;
   const { window } = props;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
   const navigate = useNavigate();
   const rolAdmin = import.meta.env.VITE_ROL_ADMIN;
 
-
-  const handleDrawerToggle = () => {
+  const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
@@ -45,10 +52,15 @@ function Navbar(props: any) {
     navigate("/login");
   };
 
+  const cartItemCount = 0; // O ajusta esto según tu lógica
+
+  const handleCartClick = () => {
+    setCartOpen(!cartOpen);
+  };
+  
 
   const [appBarHeight, setAppBarHeight] = useState<number | null>(null);
   const appBarRef = useRef<HTMLDivElement | null>(null); 
-  const [cartOpen, setCartOpen] = useState(false);
 
 useEffect(() => {
   // Obtener la altura de la AppBar una vez que esté renderizada
@@ -62,11 +74,15 @@ useEffect(() => {
   const container =
     window !== undefined ? () => window().document.body : undefined;
 
+    const logoUrl = "https://firebasestorage.googleapis.com/v0/b/pinguinos-kids.appspot.com/o/LogoMobile%2FLogoMobile.png?alt=media&token=eca73682-14ea-4dbd-803d-31be6a85d6ad";
+
+
+
 const drawer = (
   <SwipeableDrawer
     anchor="left"
     open={isMenuOpen}
-    onClose={handleDrawerToggle}
+    onClose={handleMenuToggle}
     onOpen={() => {}}
     container={container}
     sx={{
@@ -74,7 +90,7 @@ const drawer = (
       flexShrink: 0,
       "& .MuiDrawer-paper": {
         boxSizing: "border-box",
-        width: drawerWidth,
+        width: MenuButtonWidth,
         top: `${appBarRef.current?.clientHeight || 0}px`,
         backgroundColor: "#1976d2",
         height: "100%",
@@ -83,8 +99,8 @@ const drawer = (
     }}
   >
     {/* Utiliza el componente DrawerContent aquí */}
-    <DrawerContent
-      handleDrawerToggle={handleDrawerToggle}
+    <MobileMenuButton
+      handleDrawerToggle={handleMenuToggle}
       isLogged={isLogged}
       user={user}
       rolAdmin={rolAdmin}
@@ -94,6 +110,8 @@ const drawer = (
 );
 
 
+
+ // Otras constantes y funciones necesarias
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -120,13 +138,13 @@ const drawer = (
       color="secondary"
       aria-label="toggle menu"
       edge="start"
-      onClick={handleDrawerToggle}
+      onClick={handleMenuToggle}
     >
   {isMenuOpen ? <CloseIcon color="secondary" /> : <MenuIcon color="secondary" />}
 </IconButton>
 
     <Link to="/" style={{ color: "whitesmoke", textDecoration: "none" }}>
-      Pinguinos Kids
+    <MobileLogo src={logoUrl} alt="Logo" />
     </Link>
   </div>
   <div style={{ display: "flex", alignItems: "center" }}>
@@ -146,7 +164,8 @@ const drawer = (
       aria-label="shopping cart"
       onClick={() => setCartOpen(!cartOpen)}
     >
-    <ShoppingCartIcon />
+    <MobileCart itemCount={cartItemCount} onClick={handleCartClick} />
+
     </IconButton>
     </Link>
 
@@ -159,7 +178,7 @@ const drawer = (
       <SwipeableDrawer
   anchor="left"
   open={isMenuOpen}
-  onClose={handleDrawerToggle}
+  onClose={handleMenuToggle}
   onOpen={() => {}} 
   container={container}
   sx={{
@@ -167,7 +186,7 @@ const drawer = (
     flexShrink: 0,
     "& .MuiDrawer-paper": {
       boxSizing: "border-box",
-      width: drawerWidth,
+      width: MenuButtonWidth,
       top: `${appBarRef.current?.clientHeight || 0}px`, // Obtiene la altura de la AppBar
       backgroundColor: "#1976d2",
       height: "100%",
@@ -204,6 +223,9 @@ const drawer = (
       </Box>
     </Box>
   );
-}
+ 
+};
 
-export default Navbar;
+export default NavbarMobile;
+
+
