@@ -15,7 +15,7 @@ import SearchIcon from "@mui/icons-material/Search";
 
 import { Link, Outlet, useNavigate } from "react-router-dom";
 
-import MobileMenuButton from "./MobileMenuButton/MobileMenuButton";
+import MobileMenuList from "./MobileMenuList/MobileMenuList";
 import MobileLogo from "./MobileLogo/MobileLogo";
 import SearchBar from "./SearchBar/SearchBar";
 import MobileCart from "./ MobileCart/MobileCart"
@@ -55,9 +55,9 @@ const NavbarMobile = (props:any) => {
   const cartItemCount = 0; // O ajusta esto según tu lógica
 
   const handleCartClick = () => {
-    setCartOpen(!cartOpen);
-  };
-  
+  setCartOpen(!cartOpen);
+};
+
 
   const [appBarHeight, setAppBarHeight] = useState<number | null>(null);
   const appBarRef = useRef<HTMLDivElement | null>(null); 
@@ -71,15 +71,89 @@ useEffect(() => {
 }, []);
 
 
-  const container =
-    window !== undefined ? () => window().document.body : undefined;
+  const container = window !== undefined ? () => window().document.body : undefined;
 
-    const logoUrl = "https://firebasestorage.googleapis.com/v0/b/pinguinos-kids.appspot.com/o/LogoMobile%2FLogoMobile.png?alt=media&token=eca73682-14ea-4dbd-803d-31be6a85d6ad";
-
+  const logoUrl = "https://firebasestorage.googleapis.com/v0/b/pinguinos-kids.appspot.com/o/LogoMobile%2FLogoMobile.png?alt=media&token=eca73682-14ea-4dbd-803d-31be6a85d6ad";
 
 
-const drawer = (
-  <SwipeableDrawer
+
+
+
+
+
+  return (
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <AppBar
+        position="fixed"
+        ref={appBarRef} 
+        sx={{
+          width: "100%",
+          zIndex: 1 
+        }}
+      >
+       <Toolbar
+        sx={{
+        gap: "20px",
+        display: "flex",
+        justifyContent: "space-between",
+        }}
+    >
+    <div style={{ display: "flex", alignItems: "center" }}>
+
+    {/* Elementos a la izquierda (menú de hamburguesa y Logo de la empresa) */}
+
+
+                         {/* Menú de hamburguesa */}
+    <IconButton
+      color="secondary"
+      aria-label="toggle menu"
+      edge="start"
+      onClick={handleMenuToggle}
+    >
+  {isMenuOpen ? <CloseIcon color="secondary" /> : <MenuIcon color="secondary" />}
+</IconButton>
+
+                            {/* Logo de la Empresa */}
+
+    <Link to="/" style={{ color: "whitesmoke", textDecoration: "none" }}>
+    <MobileLogo src={logoUrl} alt="Logo" />
+    </Link>
+  </div>
+  <div style={{ display: "flex", alignItems: "center" }}>
+
+                           {/* Campo de búsqueda */}
+   <IconButton
+     color="secondary"
+     aria-label="search"
+     onClick={toggleSearch}
+    >
+    <SearchIcon />
+    </IconButton>
+
+                           {/* Icono del carrito */}
+
+    <Link to="/cart" style={{ textDecoration: "none", color: "inherit" }}>
+                         
+                         {/* Revisar este código */}
+
+    <IconButton
+      color="secondary"
+      aria-label="shopping cart"
+      onClick={() => setCartOpen(!cartOpen)}
+    >
+    <MobileCart itemCount={cartItemCount} onClick={handleCartClick} />
+
+    </IconButton>
+    </Link>
+
+  </div>
+</Toolbar>
+
+      </AppBar>
+      <Box component="nav" aria-label="mailbox folders">
+
+      <SwipeableDrawer
     anchor="left"
     open={isMenuOpen}
     onClose={handleMenuToggle}
@@ -98,8 +172,7 @@ const drawer = (
       },
     }}
   >
-    {/* Utiliza el componente DrawerContent aquí */}
-    <MobileMenuButton
+    <MobileMenuList
       handleDrawerToggle={handleMenuToggle}
       isLogged={isLogged}
       user={user}
@@ -107,95 +180,6 @@ const drawer = (
       handleLogout={handleLogout}
     />
   </SwipeableDrawer>
-);
-
-
-
- // Otras constantes y funciones necesarias
-
-  return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
-      <AppBar
-        position="fixed"
-        ref={appBarRef} 
-        sx={{
-          width: "100%",
-          zIndex: 1 
-        }}
-      >
-       <Toolbar
-  sx={{
-    gap: "20px",
-    display: "flex",
-    justifyContent: "space-between",
-  }}
->
-  <div style={{ display: "flex", alignItems: "center" }}>
-    {/* Elementos a la izquierda (menú de hamburguesa y nombre de la empresa) */}
-    
-    <IconButton
-      color="secondary"
-      aria-label="toggle menu"
-      edge="start"
-      onClick={handleMenuToggle}
-    >
-  {isMenuOpen ? <CloseIcon color="secondary" /> : <MenuIcon color="secondary" />}
-</IconButton>
-
-    <Link to="/" style={{ color: "whitesmoke", textDecoration: "none" }}>
-    <MobileLogo src={logoUrl} alt="Logo" />
-    </Link>
-  </div>
-  <div style={{ display: "flex", alignItems: "center" }}>
-    {/* Campo de búsqueda */}
-   <IconButton
-     color="secondary"
-     aria-label="search"
-     onClick={toggleSearch}
-    >
-    <SearchIcon />
-    </IconButton>
-
-    {/* Icono del carrito */}
-    <Link to="/cart" style={{ textDecoration: "none", color: "inherit" }}>
-    <IconButton
-      color="secondary"
-      aria-label="shopping cart"
-      onClick={() => setCartOpen(!cartOpen)}
-    >
-    <MobileCart itemCount={cartItemCount} onClick={handleCartClick} />
-
-    </IconButton>
-    </Link>
-
-  </div>
-</Toolbar>
-
-      </AppBar>
-      <Box component="nav" aria-label="mailbox folders">
-
-      <SwipeableDrawer
-  anchor="left"
-  open={isMenuOpen}
-  onClose={handleMenuToggle}
-  onOpen={() => {}} 
-  container={container}
-  sx={{
-    display: { xs: "block" },
-    flexShrink: 0,
-    "& .MuiDrawer-paper": {
-      boxSizing: "border-box",
-      width: MenuButtonWidth,
-      top: `${appBarRef.current?.clientHeight || 0}px`, // Obtiene la altura de la AppBar
-      backgroundColor: "#1976d2",
-      height: "100%",
-      zIndex: 1300,
-    },
-  }}
->
-  {drawer}
-</SwipeableDrawer>
 
       </Box>
       <Box
@@ -215,7 +199,6 @@ const drawer = (
     <SearchBar handleSearch={props.handleSearch} />
   </Toolbar>
 )}
-
 
 
 

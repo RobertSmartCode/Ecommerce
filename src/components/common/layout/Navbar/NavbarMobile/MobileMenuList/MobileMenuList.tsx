@@ -14,11 +14,13 @@ import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from "@mui/icons-material/Logout";
 
 
+
+
 import { Link } from "react-router-dom";
 import { menuItems } from "../../../../../../router/navigation";
 
 // Define los tipos para las propiedades del componente
-interface MobileMenuButtonProps {
+interface MobileMenuListProps {
   handleDrawerToggle: () => void;
   isLogged: boolean;
   user: {
@@ -28,7 +30,7 @@ interface MobileMenuButtonProps {
   handleLogout: () => void;
 }
 
-const MobileMenuButton: React.FC<MobileMenuButtonProps> = ({
+const MobileMenuList: React.FC<MobileMenuListProps> = ({
   handleDrawerToggle,
   isLogged,
   user,
@@ -109,4 +111,4 @@ const MobileMenuButton: React.FC<MobileMenuButtonProps> = ({
   );
 };
 
-export default MobileMenuButton;
+export default MobileMenuList;
