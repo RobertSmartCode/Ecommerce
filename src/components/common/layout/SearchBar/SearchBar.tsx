@@ -1,6 +1,4 @@
-// SearchBar.tsx
-
-import React, { useState } from "react";
+import { useState } from "react";
 import InputBase from "@mui/material/InputBase";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
@@ -23,6 +21,7 @@ function SearchBar({ handleSearch }: SearchBarProps) {
       style={{
         display: "flex",
         alignItems: "center",
+        justifyContent: "center", // Centra horizontalmente en pantallas de escritorio
         width: "100%",
         background: "#1976d2", // Fondo azul (color primario)
         borderRadius: "4px", // Borde redondeado
