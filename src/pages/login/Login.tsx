@@ -11,7 +11,8 @@ import {
   TextField,
   Tooltip,
   Typography,
-  useMediaQuery, // Importar useMediaQuery
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
 import { Link, useNavigate } from "react-router-dom";
@@ -24,6 +25,7 @@ const Login: React.FC = () => {
   const { handleLogin } = useContext(AuthContext)!;
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -68,7 +70,6 @@ const Login: React.FC = () => {
     navigate("/");
   };
 
-  // Usar useMediaQuery para detectar pantalla de escritorio
   const isDesktop = useMediaQuery("(min-width:960px)");
 
   return (
@@ -78,14 +79,15 @@ const Login: React.FC = () => {
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
-        padding: "20px", // Padding por defecto
-        maxWidth: "600px", // Ancho máximo del contenido
-        marginLeft: "auto", // Espacio a la izquierda
-        marginRight: "auto", // Espacio a la derecha
+        padding: "20px",
+        maxWidth: "600px",
+        marginLeft: "auto",
+        marginRight: "auto",
         ...(isDesktop && {
-          paddingLeft: "400px", // Padding a la izquierda para escritorio
-          paddingRight: "400px", // Padding a la derecha para escritorio
+          paddingLeft: "400px",
+          paddingRight: "400px",
         }),
+        backgroundColor: theme.palette.primary.main,
       }}
     >
       <form onSubmit={handleSubmit}>
@@ -96,6 +98,11 @@ const Login: React.FC = () => {
               label="Email"
               fullWidth
               onChange={handleChange}
+              InputProps={{
+                sx: {
+                  color: "#000", // Color de texto negro
+                },
+              }}
             />
           </Grid>
           <Grid item xs={12} md={12}>
@@ -124,12 +131,19 @@ const Login: React.FC = () => {
                   </InputAdornment>
                 }
                 label="Contraseña"
+                sx={{
+                  color: "#000", // Color de texto negro
+                }}
               />
             </FormControl>
           </Grid>
           <Link
             to="/forgot-password"
-            style={{ color: "steelblue", marginTop: "10px" }}
+            style={{
+              color: "#000", // Color de texto negro
+              marginTop: "10px",
+              textDecoration: "none",
+            }}
           >
             ¿Olvidaste tu contraseña?
           </Link>
@@ -140,9 +154,9 @@ const Login: React.FC = () => {
                 fullWidth
                 type="submit"
                 sx={{
-                  color: "white",
+                  color: "#fff",
+                  backgroundColor: "black", // Fondo negro
                   textTransform: "none",
-                  textShadow: "2px 2px 2px grey",
                 }}
               >
                 Ingresar
@@ -157,9 +171,9 @@ const Login: React.FC = () => {
                   type="button"
                   fullWidth
                   sx={{
-                    color: "white",
+                    color: "#fff",
+                    backgroundColor: "black", // Fondo negro
                     textTransform: "none",
-                    textShadow: "2px 2px 2px grey",
                   }}
                 >
                   Ingresa con Google
@@ -184,9 +198,9 @@ const Login: React.FC = () => {
                   onClick={() => navigate("/register")}
                   type="button"
                   sx={{
-                    color: "white",
+                    color: "#fff",
+                    backgroundColor: "black", // Fondo negro
                     textTransform: "none",
-                    textShadow: "2px 2px 2px grey",
                   }}
                 >
                   Regístrate

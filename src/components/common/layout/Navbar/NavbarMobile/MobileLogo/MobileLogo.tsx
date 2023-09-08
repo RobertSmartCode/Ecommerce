@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTheme } from '@mui/material/styles'; // Importa useTheme desde Material-UI
 
 interface MobileLogoProps {
   src: string; // URL de la imagen del logo para móviles
@@ -8,9 +9,20 @@ interface MobileLogoProps {
 }
 
 const MobileLogo: React.FC<MobileLogoProps> = ({ src, alt, width = 'auto', height = 'auto' }) => {
+  const theme = useTheme(); // Obtiene el tema actual
+
   return (
-    <img src={src} alt={alt} style={{ width, height }} />
+    <img
+      src={src}
+      alt={alt}
+      style={{
+        width,
+        height,
+        color: theme.palette.text.primary, // Define el color del texto alternativo usando el tema
+      }}
+    />
   );
 };
 
 export default MobileLogo;
+

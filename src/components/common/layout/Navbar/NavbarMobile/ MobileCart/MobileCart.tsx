@@ -1,21 +1,29 @@
 import React from 'react';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import IconButton from '@mui/material/IconButton';
+import { useTheme } from '@mui/material/styles'; // Importa useTheme desde Material-UI
 
 interface MobileCartProps {
-  itemCount: number; // Cantidad de elementos en el carrito
-  onClick: () => void; // Función que se ejecuta al hacer clic en el carrito
+  itemCount: number;
+  onClick: () => void;
 }
 
 const MobileCart: React.FC<MobileCartProps> = ({ itemCount, onClick }) => {
+  const theme = useTheme(); // Obtiene el tema actual
+
   return (
-    <div onClick={onClick} style={{ cursor: 'pointer' }}>
-      <ShoppingCartIcon fontSize="large" />
-      {itemCount > 0 && (
-        <span style={{ position: 'absolute', top: '0', right: '0', backgroundColor: 'red', color: 'white', borderRadius: '50%', padding: '4px 8px', fontSize: '12px' }}>
-          {itemCount}
-        </span>
-      )}
-    </div>
+    <IconButton
+      color="primary"
+      aria-label="shopping cart"
+      onClick={onClick}
+      style={{
+        backgroundColor: theme.palette.primary.main, // Define el color de fondo usando el tema
+        color: theme.palette.primary.contrastText, // Define el color del texto usando el tema
+      }}
+    >
+      <ShoppingCartIcon />
+      <span>{itemCount}</span>
+    </IconButton>
   );
 };
 

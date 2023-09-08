@@ -3,7 +3,6 @@ import {
   IconButton,
   Toolbar,
   CssBaseline,
-  SwipeableDrawer,
   AppBar,
   Box,
 } from "@mui/material";
@@ -25,7 +24,7 @@ import { logout } from "../../../../../firebase/firebaseConfig";
 import { AuthContext } from "../../../../../context/AuthContext";
 
 
- const MenuButtonWidth = 411;
+
 
 // Supongamos que tienes estas propiedades definidas en tu componente principal
 const NavbarMobile = (props:any) => {
@@ -70,14 +69,12 @@ useEffect(() => {
   }
 }, []);
 
+const MenuButtonWidth = 411;
+const Top = `${appBarHeight || 0}px`
 
   const container = window !== undefined ? () => window().document.body : undefined;
 
   const logoUrl = "https://firebasestorage.googleapis.com/v0/b/pinguinos-kids.appspot.com/o/LogoMobile%2FLogoMobile.png?alt=media&token=eca73682-14ea-4dbd-803d-31be6a85d6ad";
-
-
-
-
 
 
 
@@ -133,54 +130,36 @@ useEffect(() => {
 
                            {/* Icono del carrito */}
 
-    <Link to="/cart" style={{ textDecoration: "none", color: "inherit" }}>
-                         
-                         {/* Revisar este código */}
+          <Link to="/cart" style={{ textDecoration: "none", color: "inherit" }}>
+          <IconButton
+            color="secondary"
+            aria-label="shopping cart"
+            onClick={handleCartClick}
+          >
+            <MobileCart itemCount={cartItemCount} onClick={handleCartClick} />
+          </IconButton>
+          </Link>
 
-    <IconButton
-      color="secondary"
-      aria-label="shopping cart"
-      onClick={() => setCartOpen(!cartOpen)}
-    >
-    <MobileCart itemCount={cartItemCount} onClick={handleCartClick} />
-
-    </IconButton>
-    </Link>
 
   </div>
 </Toolbar>
 
       </AppBar>
+
+                   {/* Lista de menú */}
+
       <Box component="nav" aria-label="mailbox folders">
-
-      <SwipeableDrawer
-    anchor="left"
-    open={isMenuOpen}
-    onClose={handleMenuToggle}
-    onOpen={() => {}}
-    container={container}
-    sx={{
-      display: { xs: "block" },
-      flexShrink: 0,
-      "& .MuiDrawer-paper": {
-        boxSizing: "border-box",
-        width: MenuButtonWidth,
-        top: `${appBarRef.current?.clientHeight || 0}px`,
-        backgroundColor: "#1976d2",
-        height: "100%",
-        zIndex: 1300,
-      },
-    }}
-  >
-    <MobileMenuList
-      handleDrawerToggle={handleMenuToggle}
-      isLogged={isLogged}
-      user={user}
-      rolAdmin={rolAdmin}
-      handleLogout={handleLogout}
-    />
-  </SwipeableDrawer>
-
+     <MobileMenuList
+          handleMenuToggle={handleMenuToggle}
+          isLogged={isLogged}
+          user={user}
+          rolAdmin={rolAdmin}
+          handleLogout={handleLogout}
+          isMenuOpen={isMenuOpen}
+          container={container}
+          MenuButtonWidth={MenuButtonWidth}
+          Top={Top}
+        />
       </Box>
       <Box
         component="main"
@@ -199,8 +178,6 @@ useEffect(() => {
     <SearchBar handleSearch={props.handleSearch} />
   </Toolbar>
 )}
-
-
 
         <Outlet />
       </Box>
