@@ -1,63 +1,111 @@
-import React from "react";
-import { useState } from "react";
 import InputBase from "@mui/material/InputBase";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
-import { useTheme } from "@mui/material/styles"; // Importa useTheme desde Material-UI
+import CloseIcon from "@mui/icons-material/Close";
+import Drawer from "@mui/material/Drawer";
+import { makeStyles } from "@mui/styles";
+
+
+
+
+const useStyles = makeStyles((theme:any) => ({
+  searchContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "80%", 
+    margin: "0 auto",
+    background: theme.palette.secondary.main,
+    borderRadius: "8px",
+    border: `1px solid ${theme.palette.secondary.main}`,
+  },
+  searchInput: {
+    color: theme.palette.text.secondary,
+    border: `1px solid ${theme.palette.secondary.main}`,
+    background: theme.palette.primary.main,
+    borderRadius: "8px 0 0 8px",
+    padding: "8px",
+  },
+  searchButton: {
+    background: theme.palette.secondary.main,
+    borderRadius: "0 4px 4px 0",
+  },
+  searchDrawer: {
+    width: "100%",
+    maxWidth: "411px",
+    background:theme.palette.primary.main,
+  },
+  topBar: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    padding: "12px 8px", // Aumenta el padding vertical
+    backgroundColor: theme.palette.secondary.main, // Fondo negro
+    color: theme.palette.primary.main, 
+    marginBottom: theme.spacing(5),   
+  },
+  closeButton: {
+    marginRight: "2px", // Espacio entre CloseIcon y la palabra "Buscar"
+    marginLeft: "0",
+    fontSize: "24px", // Ajusta el tamaño del ícono CloseIcon
+  },
+  searchText: {
+    fontSize: "24px", // Ajusta el tamaño de la palabra "Buscar"
+    color: theme.palette.primary.main, 
+  },
+}));
 
 interface SearchBarProps {
-  handleSearch: (searchTerm: string) => void;
+  toggleSearch: () => void; // Agrega toggleSearch como una propiedad
+  searchOpen: boolean; // Agrega searchOpen como una propiedad de tipo boolean
 }
+const SearchBar : React.FC<SearchBarProps> = ({
+   searchOpen,
+  toggleSearch,
+ 
+}) => {
 
-function SearchBar({ handleSearch }: SearchBarProps) {
-  const theme = useTheme(); // Obtiene el tema actual
+  const classes = useStyles();
 
-  const [searchTerm, setSearchTerm] = useState("");
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSearch(searchTerm);
-    }
-  };
+
+
+
+  
+
 
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center", // Centra horizontalmente en pantallas de escritorio
-        width: "100%",
-        background: theme.palette.secondary.main, // Utiliza el color secundario de la paleta
-        borderRadius: "8px", // Borde redondeado en todas las esquinas
-        border: `1px solid ${theme.palette.secondary.main}`, // Utiliza el color secundario de la paleta para el borde
-      }}
+    <div className={classes.searchContainer}>
+      <Drawer
+  anchor="left"
+  open={searchOpen}
+  onClose={toggleSearch}
+  classes={{ paper: classes.searchDrawer }}
+>
+  <div className={classes.topBar}>
+    <IconButton
+      color="primary"
+      aria-label="close"
+      onClick={toggleSearch}
+      className={classes.closeButton}
     >
-      <InputBase
-        placeholder="Buscar..."
-        fullWidth
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        onKeyPress={handleKeyPress}
-        style={{
-          color: theme.palette.text.primary, // Usa el color de texto del tema
-          background: "white",
-          border: `1px solid ${theme.palette.secondary.main}`,
-          borderRadius: "8px 0 0 8px", // Borde redondeado solo en la esquina superior izquierda
-          borderLeftWidth: "1px", // Aumenta el grosor del borde izquierdo
-          padding: "4px", // Espacio dentro del campo
-        }}
-      />
-      <IconButton
-        color="secondary"
-        aria-label="search"
-        onClick={() => handleSearch(searchTerm)}
-        style={{
-          background: theme.palette.secondary.main, // Utiliza el color secundario de la paleta para el fondo del botón
-          borderRadius: "0 4px 4px 0",
-        }}
-      >
-        <SearchIcon style={{ color: "white" }} />
-      </IconButton>
+      <CloseIcon />
+    </IconButton>
+    <span className={classes.searchText}>Buscar</span>
+  </div>
+  
+  <div className={classes.searchContainer}>
+    <InputBase
+      placeholder="¿Qué estás buscando?"
+      fullWidth
+      className={classes.searchInput}
+    />
+    <IconButton color="secondary" aria-label="search">
+      <SearchIcon style={{ color: "white" }} />
+    </IconButton>
+  </div>
+</Drawer> 
+      
     </div>
   );
 }

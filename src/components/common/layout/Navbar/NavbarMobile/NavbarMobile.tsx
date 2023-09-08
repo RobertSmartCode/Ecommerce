@@ -175,9 +175,10 @@ const Top = `${appBarHeight || 0}px`
 
   {searchOpen && (
   <Toolbar>
-    <SearchBar handleSearch={props.handleSearch} />
+    <SearchBar searchOpen={searchOpen} toggleSearch={toggleSearch} />
   </Toolbar>
 )}
+
 
         <Outlet />
       </Box>
