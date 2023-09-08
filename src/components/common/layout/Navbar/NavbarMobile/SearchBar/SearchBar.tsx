@@ -6,8 +6,6 @@ import Drawer from "@mui/material/Drawer";
 import { makeStyles } from "@mui/styles";
 
 
-
-
 const useStyles = makeStyles((theme:any) => ({
   searchContainer: {
     display: "flex",
@@ -38,7 +36,7 @@ const useStyles = makeStyles((theme:any) => ({
   topBar: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     padding: "12px 8px", // Aumenta el padding vertical
     backgroundColor: theme.palette.secondary.main, // Fondo negro
     color: theme.palette.primary.main, 
@@ -50,7 +48,7 @@ const useStyles = makeStyles((theme:any) => ({
     fontSize: "24px", // Ajusta el tamaño del ícono CloseIcon
   },
   searchText: {
-    fontSize: "24px", // Ajusta el tamaño de la palabra "Buscar"
+    fontSize: "20px", // Ajusta el tamaño de la palabra "Buscar"
     color: theme.palette.primary.main, 
   },
 }));
@@ -67,13 +65,6 @@ const SearchBar : React.FC<SearchBarProps> = ({
 
   const classes = useStyles();
 
-
-
-
-
-  
-
-
   return (
     <div className={classes.searchContainer}>
       <Drawer
@@ -83,6 +74,7 @@ const SearchBar : React.FC<SearchBarProps> = ({
   classes={{ paper: classes.searchDrawer }}
 >
   <div className={classes.topBar}>
+  <span className={classes.searchText}>Buscar</span>
     <IconButton
       color="primary"
       aria-label="close"
@@ -91,7 +83,7 @@ const SearchBar : React.FC<SearchBarProps> = ({
     >
       <CloseIcon />
     </IconButton>
-    <span className={classes.searchText}>Buscar</span>
+   
   </div>
   
   <div className={classes.searchContainer}>
