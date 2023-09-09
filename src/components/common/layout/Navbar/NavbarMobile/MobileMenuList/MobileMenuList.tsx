@@ -7,16 +7,17 @@ import {
   ListItemText,
   SvgIcon,
   SwipeableDrawer,
-  useTheme,
+  useTheme
 } from "@mui/material";
-
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ShopIcon from "@mui/icons-material/Shop";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
-
 import { Link } from "react-router-dom";
 import { menuItems } from "../../../../../../router/navigation";
+import useStyles from './MobileMenuListStyles';
+
+
 
 interface MobileMenuListProps {
   handleMenuToggle: () => void;
@@ -44,11 +45,10 @@ const MobileMenuList: React.FC<MobileMenuListProps> = ({
   handleLogout,
 }) => {
 
-  
   const theme = useTheme();
-
   const primaryColor = theme.palette.primary.main;
-  const textColor = theme.palette.text.primary;
+  const classes = useStyles();
+
 
   return (
     <SwipeableDrawer
@@ -77,12 +77,17 @@ const MobileMenuList: React.FC<MobileMenuListProps> = ({
               <Link key={id} to={path} onClick={handleMenuToggle}>
                 <ListItem disablePadding>
                   <ListItemButton>
-                    <ListItemIcon sx={{ color: textColor }}>
+                    <ListItemIcon sx={{ color: theme.palette.text.primary }}>
                       <SvgIcon>
                         <Icon />
                       </SvgIcon>
                     </ListItemIcon>
-                    <ListItemText primary={title} sx={{ color: textColor }} />
+                    <ListItemText
+                      primary={title}
+                      primaryTypographyProps={{
+                        className: classes.listItemText,
+                      }}
+                    />
                   </ListItemButton>
                 </ListItem>
               </Link>
@@ -90,51 +95,71 @@ const MobileMenuList: React.FC<MobileMenuListProps> = ({
           })}
 
           {!isLogged ? (
-            <Link to="/login">
+            <Link to="/login" onClick={handleMenuToggle}>
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <LoginIcon sx={{ color: textColor }} />
+                    <LoginIcon sx={{ color: theme.palette.text.primary }} />
                   </ListItemIcon>
-                  <ListItemText primary={"Iniciar sesión"} sx={{ color: textColor }} />
+                  <ListItemText
+                    primary={"Iniciar sesión"}
+                    primaryTypographyProps={{
+                      className: classes.listItemText,
+                    }}
+                  />
                 </ListItemButton>
               </ListItem>
             </Link>
           ) : null}
 
           {isLogged && user.rol === rolAdmin && (
-            <Link to="/dashboard">
+            <Link to="/dashboard" onClick={handleMenuToggle}>
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <DashboardIcon sx={{ color: textColor }} />
+                    <DashboardIcon sx={{ color: theme.palette.text.primary }} />
                   </ListItemIcon>
-                  <ListItemText primary={"Dashboard"} sx={{ color: textColor }} />
+                  <ListItemText
+                    primary={"Dashboard"}
+                    primaryTypographyProps={{
+                      className: classes.listItemText,
+                    }}
+                  />
                 </ListItemButton>
               </ListItem>
             </Link>
           )}
 
           {isLogged && (
-            <Link to="/user-orders">
+            <Link to="/user-orders" onClick={handleMenuToggle}>
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <ShopIcon sx={{ color: textColor }} />
+                    <ShopIcon sx={{ color: theme.palette.text.primary }} />
                   </ListItemIcon>
-                  <ListItemText primary={"Mis compras"} sx={{ color: textColor }} />
+                  <ListItemText
+                    primary={"Mis compras"}
+                    primaryTypographyProps={{
+                      className: classes.listItemText,
+                    }}
+                  />
                 </ListItemButton>
               </ListItem>
             </Link>
           )}
 
           {isLogged && (
-            <ListItem disablePadding>
-              <ListItemButton onClick={handleLogout}>
+            <ListItem disablePadding onClick={handleLogout}>
+              <ListItemButton>
                 <ListItemIcon>
-                  <LogoutIcon sx={{ color: textColor }} />
+                  <LogoutIcon sx={{ color: theme.palette.text.primary }} />
                 </ListItemIcon>
-                <ListItemText primary={"Cerrar sesión"} sx={{ color: textColor }} />
+                <ListItemText
+                  primary={"Cerrar sesión"}
+                  primaryTypographyProps={{
+                    className: classes.listItemText,
+                  }}
+                />
               </ListItemButton>
             </ListItem>
           )}
@@ -145,6 +170,3 @@ const MobileMenuList: React.FC<MobileMenuListProps> = ({
 };
 
 export default MobileMenuList;
-
-
-
