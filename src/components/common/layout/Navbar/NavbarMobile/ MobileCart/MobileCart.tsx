@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from '@mui/material/IconButton';
@@ -49,7 +49,7 @@ const MobileCart: React.FC<MobileCartProps> = ({ itemCount }) => {
       onClose={() => setCartOpen(false)}
     >
       <Box className={classes.topBar}>
-      <span className={classes.searchText}>Carrito de Compra</span>
+      <span className={classes.searchText}>Carrito de Compras</span>
         <IconButton
           color="primary"
           aria-label="close"

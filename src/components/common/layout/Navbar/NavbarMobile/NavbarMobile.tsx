@@ -17,7 +17,7 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import MobileMenuList from "./MobileMenuList/MobileMenuList";
 import MobileLogo from "./MobileLogo/MobileLogo";
 import SearchBar from "./SearchBar/SearchBar";
-import MobileCart from "./ MobileCart/MobileCart"
+import MobileCart from './ MobileCart/MobileCart';
 
 
 import { logout } from "../../../../../firebase/firebaseConfig";
@@ -130,15 +130,8 @@ const Top = `${appBarHeight || 0}px`
 
                            {/* Icono del carrito */}
 
-          <Link to="/cart" style={{ textDecoration: "none", color: "inherit" }}>
-          <IconButton
-            color="secondary"
-            aria-label="shopping cart"
-            onClick={handleCartClick}
-          >
-            <MobileCart itemCount={cartItemCount} onClick={handleCartClick} />
-          </IconButton>
-          </Link>
+    <MobileCart itemCount={cartItemCount} onClick={handleCartClick} />
+          
 
 
   </div>
