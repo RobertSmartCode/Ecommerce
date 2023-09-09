@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useContext } from "react";
+import { useRef, useEffect, useState } from "react";
 import {
   IconButton,
   Toolbar,
@@ -12,7 +12,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import SearchIcon from "@mui/icons-material/Search";
 
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 import MobileMenuList from "./MobileMenuList/MobileMenuList";
 import MobileLogo from "./MobileLogo/MobileLogo";
@@ -20,22 +20,16 @@ import SearchBar from "./SearchBar/SearchBar";
 import MobileCart from './ MobileCart/MobileCart';
 
 
-import { logout } from "../../../../../firebase/firebaseConfig";
-import { AuthContext } from "../../../../../context/AuthContext";
 
 
-
-
-// Supongamos que tienes estas propiedades definidas en tu componente principal
 const NavbarMobile = (props:any) => {
 
-  const { logoutContext, isLogged, user } = useContext(AuthContext)!;
+  
   const { window } = props;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
-  const navigate = useNavigate();
-  const rolAdmin = import.meta.env.VITE_ROL_ADMIN;
+
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -45,11 +39,7 @@ const NavbarMobile = (props:any) => {
     setSearchOpen(!searchOpen);
   };
 
-  const handleLogout = () => {
-    logout();
-    logoutContext();
-    navigate("/login");
-  };
+
 
   const cartItemCount = 0; // O ajusta esto según tu lógica
 
@@ -61,16 +51,16 @@ const NavbarMobile = (props:any) => {
   const [appBarHeight, setAppBarHeight] = useState<number | null>(null);
   const appBarRef = useRef<HTMLDivElement | null>(null); 
 
-useEffect(() => {
-  // Obtener la altura de la AppBar una vez que esté renderizada
-  if (appBarRef.current) {
-    
-    setAppBarHeight(appBarRef.current.clientHeight);
-  }
-}, []);
+  useEffect(() => {
+    // Obtener la altura de la AppBar una vez que esté renderizada
+    if (appBarRef.current) {
+      
+      setAppBarHeight(appBarRef.current.clientHeight);
+    }
+  }, []);
 
-const MenuButtonWidth = 411;
-const Top = `${appBarHeight || 0}px`
+
+  const Top = `${appBarHeight || 0}px`
 
   const container = window !== undefined ? () => window().document.body : undefined;
 
@@ -142,17 +132,14 @@ const Top = `${appBarHeight || 0}px`
                    {/* Lista de menú */}
 
       <Box component="nav" aria-label="mailbox folders">
+
      <MobileMenuList
           handleMenuToggle={handleMenuToggle}
-          isLogged={isLogged}
-          user={user}
-          rolAdmin={rolAdmin}
-          handleLogout={handleLogout}
           isMenuOpen={isMenuOpen}
           container={container}
-          MenuButtonWidth={MenuButtonWidth}
           Top={Top}
         />
+        
       </Box>
       <Box
         component="main"

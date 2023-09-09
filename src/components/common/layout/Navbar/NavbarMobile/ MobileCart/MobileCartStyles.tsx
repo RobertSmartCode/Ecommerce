@@ -54,6 +54,7 @@ const useStyles = makeStyles((theme:any) => ({
   searchText: {
     fontSize: '20px', // Ajusta el tamaño de la palabra "Buscar"
     color: theme.palette.primary.main,
+    marginLeft: '24px',
   },
 }));
 

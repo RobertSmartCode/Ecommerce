@@ -47,6 +47,16 @@ const MobileCart: React.FC<MobileCartProps> = ({ itemCount }) => {
       anchor="right"
       open={cartOpen}
       onClose={() => setCartOpen(false)}
+      sx={{
+        display: { xs: "block" },
+        flexShrink: 0,
+        "& .MuiDrawer-paper": {
+          boxSizing: "border-box",
+          width: 411,
+          height: "100%",
+          zIndex: 1300,
+        },
+      }}
     >
       <Box className={classes.topBar}>
       <span className={classes.searchText}>Carrito de Compras</span>

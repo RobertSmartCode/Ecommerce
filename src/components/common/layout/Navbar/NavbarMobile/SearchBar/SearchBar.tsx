@@ -21,10 +21,11 @@ const SearchBar : React.FC<SearchBarProps> = ({
   return (
     <div className={classes.searchContainer}>
       <Drawer
-  anchor="left"
+  anchor="right"
   open={searchOpen}
   onClose={toggleSearch}
   classes={{ paper: classes.searchDrawer }}
+  
 >
   <div className={classes.topBar}>
   <span className={classes.searchText}>Buscar</span>

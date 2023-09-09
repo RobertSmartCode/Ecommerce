@@ -1,4 +1,4 @@
-import React from "react";
+import { useContext } from "react";
 import {
   List,
   ListItem,
@@ -13,43 +13,43 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import ShopIcon from "@mui/icons-material/Shop";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { menuItems } from "../../../../../../router/navigation";
 import useStyles from './MobileMenuListStyles';
 
 
+import { logout } from "../../../../../../firebase/firebaseConfig";
+import { AuthContext } from "../../../../../../context/AuthContext";
+
 
 interface MobileMenuListProps {
   handleMenuToggle: () => void;
-  isLogged: boolean;
-  user: {
-    rol: string;
-  };
-  rolAdmin: string;
-  handleLogout: () => void;
   isMenuOpen: boolean;
   container?: any;
-  MenuButtonWidth: number;
   Top: string;
 }
 
 const MobileMenuList: React.FC<MobileMenuListProps> = ({
   handleMenuToggle,
-  isLogged,
-  user,
-  rolAdmin,
   isMenuOpen,
   container,
-  MenuButtonWidth,
-  Top,
-  handleLogout,
+  Top
 }) => {
 
+  const { logoutContext, isLogged, user } = useContext(AuthContext)!;
+  const rolAdmin = import.meta.env.VITE_ROL_ADMIN;
+  const classes = useStyles();
   const theme = useTheme();
   const primaryColor = theme.palette.primary.main;
-  const classes = useStyles();
-
-
+  
+  const navigate = useNavigate();
+ 
+  const handleLogout = () => {
+    logout();
+    logoutContext();
+    navigate("/login");
+  };
+  
   return (
     <SwipeableDrawer
       anchor="left"
@@ -62,7 +62,7 @@ const MobileMenuList: React.FC<MobileMenuListProps> = ({
         flexShrink: 0,
         "& .MuiDrawer-paper": {
           boxSizing: "border-box",
-          width: MenuButtonWidth,
+          width: 411,
           top: Top,
           backgroundColor: primaryColor,
           height: "100%",
