@@ -6,43 +6,46 @@ const useStyles = makeStyles((theme:any) => ({
   },
   product: {
     border: "1px solid gray",
-    padding: theme.spacing(2),
+    padding: theme.spacing(1),
     marginBottom: theme.spacing(1),
     display: "flex",
     flexDirection: "column",
     alignItems: "center", 
     textAlign: "center", 
-    backgroundColor: theme.palette.secondary.main,
-    color: theme.palette.primary.main, 
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.secondary.main, 
   },
   productImage: {
-    width: "200px",
+    width: "300px",
     marginBottom: theme.spacing(1), 
+    borderBottom: "2px solid #000"
   },
   productTitle: {
-    fontSize: "0.8rem",
+    fontSize: "1rem",
     fontWeight: "bold",
+    marginBottom: theme.spacing(1),
   },
   productPrice: {
-    fontSize: "0.4rem",
+    fontSize: "1rem",
     color: theme.palette.secondary.main,
+    marginBottom: theme.spacing(2),
   },
   productStock: {
-    fontSize: "0.1rem",
+    fontSize: "1rem",
   },
   productDetail: {
-    textDecoration: "none",
     backgroundColor: theme.palette.secondary.main, 
     color: theme.palette.primary.main, 
   },
   productCart: {
-    fontSize: "0.875rem", 
     backgroundColor: theme.palette.secondary.main, 
     color: theme.palette.primary.main, 
   },
   buttonContainer: {
     display: "flex",
-    gap: theme.spacing(2),
+    gap: theme.spacing(1),
+    marginRight: theme.spacing(3),
+    marginLeft: theme.spacing(3)
   },
 }));
 
