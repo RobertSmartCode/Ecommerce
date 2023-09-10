@@ -1,6 +1,5 @@
 import { createTheme } from "@mui/material/styles";
 
-
 // Define tus colores personalizados
 const customColors = {
   primary: {
@@ -17,15 +16,25 @@ const buttonStyles = {
   contained: {
     backgroundColor: customColors.secondary.main, // Color de fondo de los botones contenidos
     color: customColors.primary.main, // Color del texto de los botones contenidos
-    borderRadius: "30px", 
-    fontSize: "0.65rem", 
-    padding: "4px 8px"
-    
+    borderRadius: "30px",
+    fontSize: "0.65rem",
+    padding: '4px 8px',
+    display: 'flex', // Centra horizontal y verticalmente el contenido
+    justifyContent: 'center', // Centra horizontalmente el contenido
+    alignItems: 'center',
+    boxShadow: "none",
+    "&:hover": {
+      backgroundColor: customColors.primary.main, // Color de fondo en el hover
+      color: customColors.secondary.main
+    },
   },
   outlined: {
-    borderColor: customColors.primary.main, 
-    color: customColors.primary.main, 
-    
+    borderColor: customColors.primary.main,
+    color: customColors.primary.main,
+    borderWidth: "2px", // Ancho del borde
+    "&:hover": {
+      borderColor: "red", // Color del borde en el hover
+    },
   },
 };
 

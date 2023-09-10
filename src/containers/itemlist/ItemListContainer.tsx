@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { db } from "../../firebase/firebaseConfig";
 import { getDocs, collection } from "firebase/firestore";
 import { Link } from "react-router-dom";
-import { Grid, Card, CardContent, Typography, Button } from "@mui/material";
+import { Grid, Card, CardContent, Typography, Button, IconButton } from "@mui/material";
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import useStyles from './ItemListStyles';
 
 
@@ -57,17 +58,25 @@ const ItemListContainer: React.FC = () => {
                   >
                     Comprar
                   </Button>
-                  <Button
+                  {/* Icono del Ojo Aquí se cambian los colores  */}
+                  <IconButton
                     component={Link}
                     to={`/itemDetail/${product.id}`}
                     className={classes.productDetail}
-                    variant="contained"
+                    aria-label="Ver"
                     color="secondary"
                     size="small"
+                    sx={{
+                      backgroundColor: "#fff", 
+                      color: "#000",
+                      border: "2px solid #000",
+                      borderRadius: '50%',
+                      padding: 1,
+                    }}
                   >
-                    Ver
-                  </Button>
-              </div>
+                    <VisibilityIcon  sx={{ fontSize: '1rem' }}  />
+                  </IconButton>
+            </div>
 
             </CardContent>
           </Card>

@@ -30,8 +30,14 @@ const useStyles = makeStyles((theme:any) => ({
     marginBottom: theme.spacing(2),
   },
   productDetail: {
-    backgroundColor: theme.palette.secondary.main, 
-    color: theme.palette.primary.main,  
+    backgroundColor: theme.palette.primary.main, 
+    color: theme.palette.secondary.main,  
+    border: `2px solid ${theme.palette.secondary.main}`, // Color del delineado secundario
+    borderRadius: '50%', // Para hacer un círculo
+    padding: theme.spacing(1), // Espaciado inter
+  },
+  icon: {
+    fontSize: '1rem', // Tamaño del ícono (ajusta según tus preferencias)
   },
   productCart: {
     backgroundColor: theme.palette.secondary.main, 
@@ -42,7 +48,8 @@ const useStyles = makeStyles((theme:any) => ({
     gap: theme.spacing(1),
     marginTop: theme.spacing(2),
     marginLeft: theme.spacing(4),
-    marginRight: theme.spacing(4)
+    marginRight: theme.spacing(4),
+    marginBottom: '0px'
   },
 }));
 
