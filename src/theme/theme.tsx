@@ -17,16 +17,15 @@ const buttonStyles = {
   contained: {
     backgroundColor: customColors.secondary.main, // Color de fondo de los botones contenidos
     color: customColors.primary.main, // Color del texto de los botones contenidos
-    fontSize: "0.7rem",
-    padding: "4px 8px",
-    borderRadius: "20px"
+    borderRadius: "30px", 
+    fontSize: "0.65rem", 
+    padding: "4px 8px"
+    
   },
   outlined: {
     borderColor: customColors.primary.main, 
     color: customColors.primary.main, 
-    fontSize: "0.7rem",
-    padding: "4px 8px",
-    borderRadius: "20px"
+    
   },
 };
 
