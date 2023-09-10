@@ -27,8 +27,8 @@ const NavbarMobile = (props:any) => {
   
   const { window } = props;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
 
   const handleMenuToggle = () => {
@@ -36,16 +36,15 @@ const NavbarMobile = (props:any) => {
   };
 
   const toggleSearch = () => {
-    setSearchOpen(!searchOpen);
+    setIsSearchOpen(!isSearchOpen);
   };
 
 
-
-  const cartItemCount = 0; // O ajusta esto según tu lógica
-
   const handleCartClick = () => {
-  setCartOpen(!cartOpen);
+  setIsCartOpen(!isCartOpen);
 };
+
+const cartItemCount = 0; // 
 
 
   const [appBarHeight, setAppBarHeight] = useState<number | null>(null);
@@ -122,25 +121,22 @@ const NavbarMobile = (props:any) => {
 
     <MobileCart itemCount={cartItemCount} onClick={handleCartClick} />
           
-
-
   </div>
+  
 </Toolbar>
 
       </AppBar>
 
                    {/* Lista de menú */}
 
-      <Box component="nav" aria-label="mailbox folders">
-
+     <Box component="nav" aria-label="mailbox folders">
      <MobileMenuList
           handleMenuToggle={handleMenuToggle}
           isMenuOpen={isMenuOpen}
           container={container}
           Top={Top}
         />
-        
-      </Box>
+     </Box>
       <Box
         component="main"
         sx={{
@@ -153,9 +149,9 @@ const NavbarMobile = (props:any) => {
       >
   <Toolbar />
 
-  {searchOpen && (
+  {isSearchOpen && (
   <Toolbar>
-    <SearchBar searchOpen={searchOpen} toggleSearch={toggleSearch} />
+    <SearchBar isSearchOpen={isSearchOpen} toggleSearch={toggleSearch} />
   </Toolbar>
 )}
 

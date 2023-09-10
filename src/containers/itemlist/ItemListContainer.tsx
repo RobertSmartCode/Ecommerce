@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { db } from "../../firebase/firebaseConfig";
 import { getDocs, collection } from "firebase/firestore";
 import { Link } from "react-router-dom";
+import { Grid, Card, CardContent, Typography, Button } from "@mui/material";
+import useStyles from './ItemListStyles';
+
 
 interface Product {
   id: string;
@@ -12,6 +15,9 @@ interface Product {
 }
 
 const ItemListContainer: React.FC = () => {
+
+  const classes = useStyles();
+
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -28,19 +34,46 @@ const ItemListContainer: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Estoy en el shop</h1>
-
+    <Grid container spacing={1} className={classes.container}>
       {products.map((product) => (
-        <div key={product.id} style={{ border: "2px solid black" }}>
-          <img src={product.image} style={{ width: "200px" }} alt="" />
-          <h4>{product.title}</h4>
-          <h4>{product.unit_price}</h4>
-          <h4>{product.stock}</h4>
-          <Link to={`/itemDetail/${product.id}`}>Ver detalle</Link>
-        </div>
+        <Grid item xs={6} sm={6} md={6} lg={6} key={product.id}>
+          <Card className={classes.product}>
+            <img src={product.image} alt={product.title} className={classes.productImage} />
+            <CardContent>
+              <Typography variant="subtitle1" gutterBottom className={classes.productTitle}>
+                {product.title}
+              </Typography>
+              <Typography variant="subtitle2" color="textSecondary" className={classes.productPrice}>
+                Precio: ${product.unit_price}
+              </Typography>
+              <div className={classes.buttonContainer}>
+                  <Button
+                    component={Link}
+                    to={`/cart`}
+                    className={classes.productCart}
+                    variant="contained"
+                    color="secondary"
+                    size="small"
+                  >
+                    Comprar
+                  </Button>
+                  <Button
+                    component={Link}
+                    to={`/itemDetail/${product.id}`}
+                    className={classes.productDetail}
+                    variant="contained"
+                    color="secondary"
+                    size="small"
+                  >
+                    Ver
+                  </Button>
+              </div>
+
+            </CardContent>
+          </Card>
+        </Grid>
       ))}
-    </div>
+    </Grid>
   );
 };
 

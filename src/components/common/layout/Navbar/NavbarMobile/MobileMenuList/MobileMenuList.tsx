@@ -130,7 +130,7 @@ const MobileMenuList: React.FC<MobileMenuListProps> = ({
             </Link>
           )}
 
-          {isLogged && (
+          {isLogged && user.rol !== rolAdmin &&  (
             <Link to="/user-orders" onClick={handleMenuToggle}>
               <ListItem disablePadding>
                 <ListItemButton>

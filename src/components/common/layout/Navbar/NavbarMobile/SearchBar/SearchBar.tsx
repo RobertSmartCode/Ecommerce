@@ -8,10 +8,10 @@ import useStyles from './SearchBarStyles';
 
 interface SearchBarProps {
   toggleSearch: () => void; 
-  searchOpen: boolean; 
+  isSearchOpen: boolean; 
 }
 const SearchBar : React.FC<SearchBarProps> = ({
-   searchOpen,
+  isSearchOpen,
   toggleSearch,
  
 }) => {
@@ -22,7 +22,7 @@ const SearchBar : React.FC<SearchBarProps> = ({
     <div className={classes.searchContainer}>
       <Drawer
   anchor="right"
-  open={searchOpen}
+  open={isSearchOpen}
   onClose={toggleSearch}
   classes={{ paper: classes.searchDrawer }}
   
