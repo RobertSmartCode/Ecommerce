@@ -1,7 +1,12 @@
-import { Button, TextField } from "@mui/material";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { db, uploadFile } from "../../firebase/firebaseConfig";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import {
+  Button,
+  TextField,
+  Grid,
+  Snackbar,
+} from "@mui/material";
 
 interface Product {
   id: string;
@@ -10,17 +15,15 @@ interface Product {
   unit_price: number;
   stock: number;
   category: string;
-  image: string;
+  images: string[];
 }
 
-  
 interface ProductsFormProps {
-
   handleClose: () => void;
   setIsChange: (value: boolean) => void;
   productSelected: Product | null;
   setProductSelected: (product: Product | null) => void;
-  products: Product[]
+  products: Product[];
 }
 
 const ProductsForm: React.FC<ProductsFormProps> = ({
@@ -31,28 +34,30 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [newProduct, setNewProduct] = useState<Product>({
-    id:"",
+    id: "",
     title: "",
     description: "",
     unit_price: 0,
     stock: 0,
     category: "",
-    image: "",
+    images: [],
   });
-  const [file, setFile] = useState<File | null>(null);
 
-  const handleImage = async () => {
-    setIsLoading(true);
-    if (file) {
-      let url = await uploadFile(file);
-  
-      if (productSelected) {
-        setProductSelected({ ...productSelected, image: url });
-      } else {
-        setNewProduct({ ...newProduct, image: url });
-      }
-  
-      setIsLoading(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  // Muestra las imágenes cargadas al cargar el formulario en caso de edición
+  useEffect(() => {
+    if (productSelected) {
+      setFiles([]); // Esto evita que se muestren las imágenes cargadas previamente si estás editando un producto.
+    }
+  }, [productSelected]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const selectedFiles = Array.from(e.target.files);
+      setFiles([...files, ...selectedFiles]); // Agregar las imágenes seleccionadas a las imágenes existentes
     }
   };
 
@@ -68,31 +73,72 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const uploadImages = async () => {
+    const uploadedImages = [];
+
+    for (const file of files) {
+      const url = await uploadFile(file);
+      uploadedImages.push(url);
+    }
+
+    return uploadedImages;
+  };
+
+  const createProduct = async (collectionRef: any, productInfo: any) => {
+    try {
+      await addDoc(collectionRef, productInfo);
+    } catch (error) {
+      console.error("Error creating product:", error);
+      throw error;
+    }
+  };
+
+  const updateProduct = async (
+    collectionRef: any,
+    productId: string,
+    productInfo: any
+  ) => {
+    try {
+      await updateDoc(doc(collectionRef, productId), productInfo);
+    } catch (error) {
+      console.error("Error updating product:", error);
+      throw error;
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const productsCollection = collection(db, "products");
 
-    if (productSelected) {
-      let obj = {
-        ...productSelected,
-        unit_price: +productSelected.unit_price,
-        stock: +productSelected.stock,
-      };
-      updateDoc(doc(productsCollection, productSelected.id), obj).then(() => {
-        setIsChange(true);
-        handleClose();
-      });
-    } else {
-      let obj = {
+    try {
+      const uploadedImages = await uploadImages();
+
+      const productInfo = {
         ...newProduct,
         unit_price: +newProduct.unit_price,
         stock: +newProduct.stock,
+        images: uploadedImages,
       };
-      addDoc(productsCollection, obj).then(() => {
-        setIsChange(true);
-        handleClose();
-      });
+
+      if (productSelected) {
+        await updateProduct(
+          productsCollection,
+          productSelected.id,
+          productInfo
+        );
+      } else {
+        await createProduct(productsCollection, productInfo);
+      }
+
+      setFiles([]);
+      setSnackbarMessage("Producto creado/modificado con éxito");
+      setSnackbarOpen(true);
+      setIsChange(true);
+      handleClose();
+    } catch (error) {
+      setSnackbarMessage("Error al crear/modificar el producto");
+      setSnackbarOpen(true);
     }
   };
 
@@ -107,59 +153,98 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
           gap: "20px",
         }}
       >
-        <TextField
-          variant="outlined"
-          defaultValue={productSelected?.title}
-          label="nombre"
-          name="title"
-          onChange={handleChange}
-        />
-        <TextField
-          variant="outlined"
-          defaultValue={productSelected?.description}
-          label="descripcion"
-          name="description"
-          onChange={handleChange}
-        />
-        <TextField
-          variant="outlined"
-          defaultValue={productSelected?.unit_price}
-          label="precio"
-          name="unit_price"
-          onChange={handleChange}
-        />
-        <TextField
-          variant="outlined"
-          defaultValue={productSelected?.stock}
-          label="stock"
-          name="stock"
-          onChange={handleChange}
-        />
-        <TextField
-          variant="outlined"
-          defaultValue={productSelected?.category}
-          label="categoria"
-          name="category"
-          onChange={handleChange}
-        />
-        <TextField
-         type="file"
-         onInput={(e) => setFile((e.target as HTMLInputElement)?.files?.[0] ?? null)}
-        />
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              variant="outlined"
+              defaultValue={productSelected?.title}
+              label="Nombre"
+              name="title"
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              variant="outlined"
+              defaultValue={productSelected?.description}
+              label="Descripción"
+              name="description"
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              variant="outlined"
+              defaultValue={productSelected?.unit_price}
+              label="Precio"
+              name="unit_price"
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              variant="outlined"
+              defaultValue={productSelected?.stock}
+              label="Stock"
+              name="stock"
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              variant="outlined"
+              defaultValue={productSelected?.category}
+              label="Categoría"
+              name="category"
+              onChange={handleChange}
+            />
+          </Grid>
 
-        {file && (
-          <Button onClick={handleImage} type="button">
-            Cargar imagen
-          </Button>
-        )}
-        {file && !isLoading && (
-          <Button variant="contained" type="submit">
-            {productSelected ? "modificar" : "crear"}
-          </Button>
-        )}
+          <Grid item xs={12}>
+            <input
+              type="file"
+              multiple
+              onChange={handleFileChange}
+            />
+          </Grid>
+          {files.length > 0 && (
+            <Grid item xs={12}>
+              {files.map((file, index) => (
+                <div key={index}>
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt={`Preview ${index + 1}`}
+                    height="140"
+                  />
+                </div>
+              ))}
+            </Grid>
+          )}
+
+          <Grid item xs={12}>
+            {!isLoading && (
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                disabled={isLoading}
+              >
+                {productSelected ? "Modificar" : "Crear"}
+              </Button>
+            )}
+          </Grid>
+        </Grid>
       </form>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={() => setSnackbarOpen(false)}
+        message={snackbarMessage}
+      />
     </div>
   );
 };
 
 export default ProductsForm;
+

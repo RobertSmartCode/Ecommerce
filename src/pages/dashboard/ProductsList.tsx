@@ -1,8 +1,5 @@
-
-import { Button, IconButton, Modal, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
+import { Button, IconButton, Modal, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Table } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import { Table } from "@mui/material";
-
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { db } from "../../firebase/firebaseConfig";
 import { deleteDoc, doc } from "firebase/firestore";
@@ -15,7 +12,8 @@ const style: React.CSSProperties = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: "90%", // Ancho responsivo al 90% del contenedor padre
+  maxWidth: "800px", // Máximo ancho de 800px para evitar que la tabla sea demasiado ancha en pantallas grandes
   backgroundColor: "background.paper",
   border: "2px solid #000",
   boxShadow: "24px",
@@ -29,9 +27,8 @@ interface Product {
   unit_price: number;
   stock: number;
   category: string;
-  image: string;
+  images: string[];
 }
-
 
 interface PropsProductosList {
   products: Product[];
@@ -55,15 +52,14 @@ const ProductsList: React.FC<PropsProductosList> = ({ products, setIsChange }) =
     setProductSelected(product);
     setOpen(true);
   };
-  
 
   return (
     <div>
       <Button variant="contained" onClick={() => handleOpen(null)}>
         Agregar nuevo
       </Button>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <TableContainer component={Paper} sx={{ maxWidth: "100%" }}>
+        <Table aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell align="left">id</TableCell>
@@ -95,9 +91,9 @@ const ProductsList: React.FC<PropsProductosList> = ({ products, setIsChange }) =
                 </TableCell>
                 <TableCell component="th" scope="row" align="left">
                   <img
-                    src={product.image}
+                    src={product.images && product.images[0] ? product.images[0] : ''}
                     alt=""
-                    style={{ width: "80px", height: "80px" }}
+                    style={{ width: "80px", height: "80px", maxWidth: "100%" }}
                   />
                 </TableCell>
                 <TableCell component="th" scope="row" align="left">
@@ -124,13 +120,13 @@ const ProductsList: React.FC<PropsProductosList> = ({ products, setIsChange }) =
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-        <ProductsForm
-         handleClose={handleClose}
-         setIsChange={setIsChange}
-         productSelected={productSelected}
-  setProductSelected={setProductSelected}
-  products={products} // Asegúrate de pasar esta propiedad
-/>
+          <ProductsForm
+            handleClose={handleClose}
+            setIsChange={setIsChange}
+            productSelected={productSelected}
+            setProductSelected={setProductSelected}
+            products={products} // Asegúrate de pasar esta propiedad
+          />
         </Box>
       </Modal>
     </div>

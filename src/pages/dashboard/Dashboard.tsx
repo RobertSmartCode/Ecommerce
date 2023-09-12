@@ -28,7 +28,7 @@ interface Product {
   unit_price: number;
   stock: number;
   category: string;
-  image: string;
+  images: string[];
 }
 
 
@@ -52,7 +52,7 @@ const Dashboard: React.FC = () => {
           unit_price: productData.unit_price,
           stock: productData.stock,
           category: productData.category, 
-          image: productData.image, 
+          images: productData.images, 
         };
       });
       setProducts(newArr);
