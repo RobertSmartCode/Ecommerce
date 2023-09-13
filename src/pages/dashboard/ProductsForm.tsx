@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { db, uploadFile } from "../../firebase/firebaseConfig";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import {
@@ -6,6 +6,12 @@ import {
   TextField,
   Grid,
   Snackbar,
+  Card,
+  CardContent,
+  CardActions,
+  CardMedia,
+  Container,
+  Paper,
 } from "@mui/material";
 
 interface Product {
@@ -32,6 +38,7 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
   productSelected,
   setProductSelected,
 }) => {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [newProduct, setNewProduct] = useState<Product>({
     id: "",
@@ -46,18 +53,18 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
   const [files, setFiles] = useState<File[]>([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [uploadMessage, setUploadMessage] = useState<string>("");
 
-  // Muestra las imágenes cargadas al cargar el formulario en caso de edición
   useEffect(() => {
     if (productSelected) {
-      setFiles([]); // Esto evita que se muestren las imágenes cargadas previamente si estás editando un producto.
+      setFiles([]);
     }
   }, [productSelected]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
-      setFiles([...files, ...selectedFiles]); // Agregar las imágenes seleccionadas a las imágenes existentes
+      setFiles([...files, ...selectedFiles]);
     }
   };
 
@@ -77,10 +84,12 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
     const uploadedImages = [];
 
     for (const file of files) {
+      setUploadMessage("Subiendo imágenes...");
       const url = await uploadFile(file);
       uploadedImages.push(url);
     }
 
+    setUploadMessage("");
     return uploadedImages;
   };
 
@@ -142,99 +151,141 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
     }
   };
 
+  const openFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   return (
-    <div>
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          gap: "20px",
-        }}
-      >
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              variant="outlined"
-              defaultValue={productSelected?.title}
-              label="Nombre"
-              name="title"
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              variant="outlined"
-              defaultValue={productSelected?.description}
-              label="Descripción"
-              name="description"
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              variant="outlined"
-              defaultValue={productSelected?.unit_price}
-              label="Precio"
-              name="unit_price"
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              variant="outlined"
-              defaultValue={productSelected?.stock}
-              label="Stock"
-              name="stock"
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              variant="outlined"
-              defaultValue={productSelected?.category}
-              label="Categoría"
-              name="category"
-              onChange={handleChange}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <input
-              type="file"
-              multiple
-              onChange={handleFileChange}
-            />
-          </Grid>
-          {files.length > 0 && (
-            <Grid item xs={12}>
-              {files.map((file, index) => (
-                <div key={index}>
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt={`Preview ${index + 1}`}
-                    height="140"
-                  />
-                </div>
-              ))}
+    <Container maxWidth="md">
+      <Paper elevation={3} style={{ padding: "20px" }}>
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            gap: "20px",
+          }}
+        >
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
+                defaultValue={productSelected?.title}
+                label="Nombre"
+                name="title"
+                onChange={handleChange}
+              />
             </Grid>
-          )}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
+                defaultValue={productSelected?.description}
+                label="Descripción"
+                name="description"
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
+                defaultValue={productSelected?.unit_price}
+                label="Precio"
+                name="unit_price"
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
+                defaultValue={productSelected?.stock}
+                label="Stock"
+                name="stock"
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
+                defaultValue={productSelected?.category}
+                label="Categoría"
+                name="category"
+                onChange={handleChange}
+              />
+            </Grid>
 
-          <Grid item xs={12}>
-            {!isLoading && (
+            <Grid item xs={12}>
+  <div style={{ maxHeight: "300px", overflowY: "scroll" }}>
+    {files.length > 0 && (
+      <div>
+        {files.map((file, index) => (
+          <Card key={index} style={{ maxWidth: 345 }}>
+            <CardMedia
+              component="img"
+              height="auto" // Ajustar automáticamente la altura de la imagen
+              image={URL.createObjectURL(file)}
+              alt={`Preview ${index + 1}`}
+            />
+            <CardContent>
+              <p>{`Preview ${index + 1}`}</p>
+            </CardContent>
+            <CardActions>
+              <Button
+                size="small"
+                variant="contained"
+                color="secondary"
+                onClick={() => {
+                  const updatedFiles = [...files];
+                  updatedFiles.splice(index, 1);
+                  setFiles(updatedFiles);
+                }}
+              >
+                Eliminar
+              </Button>
+            </CardActions>
+          </Card>
+        ))}
+      </div>
+    )}
+  </div>
+</Grid>
+
+            <Grid item xs={12}>
               <Button
                 variant="contained"
                 color="primary"
-                type="submit"
-                disabled={isLoading}
+                onClick={openFileInput}
               >
-                {productSelected ? "Modificar" : "Crear"}
+                Subir foto
               </Button>
-            )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleFileChange}
+                style={{ display: "none" }}
+              />
+              <p>{uploadMessage}</p>
+            </Grid>
+
+            <Grid item xs={12}>
+              {!isLoading && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                  disabled={isLoading}
+                >
+                  {productSelected ? "Modificar" : "Crear"}
+                </Button>
+              )}
+            </Grid>
           </Grid>
-        </Grid>
-      </form>
+        </form>
+      </Paper>
 
       <Snackbar
         open={snackbarOpen}
@@ -242,9 +293,8 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
         onClose={() => setSnackbarOpen(false)}
         message={snackbarMessage}
       />
-    </div>
+    </Container>
   );
 };
 
 export default ProductsForm;
-
