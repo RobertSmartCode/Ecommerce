@@ -39,7 +39,7 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
   setProductSelected,
 }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading] = useState<boolean>(false);
   const [newProduct, setNewProduct] = useState<Product>({
     id: "",
     title: "",
@@ -54,6 +54,9 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [uploadMessage, setUploadMessage] = useState<string>("");
+  const [selectedImageCount, setSelectedImageCount] = useState<number>(
+    productSelected?.images.length || 0
+  );
 
   useEffect(() => {
     if (productSelected) {
@@ -64,7 +67,18 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
-      setFiles([...files, ...selectedFiles]);
+      if (
+        selectedFiles.length + selectedImageCount <= 8 &&
+        selectedFiles.length + selectedImageCount >= 1
+      ) {
+        setFiles([...files, ...selectedFiles]);
+        setSelectedImageCount(selectedImageCount + selectedFiles.length);
+        setUploadMessage("");
+      } else {
+        setUploadMessage(
+          "Llegaste al límite de fotos permitido (mínimo 1, máximo 8)."
+        );
+      }
     }
   };
 
@@ -84,7 +98,7 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
     const uploadedImages = [];
 
     for (const file of files) {
-      setUploadMessage("Subiendo imágenes...");
+      setUploadMessage("Cargando el producto...");
       const url = await uploadFile(file);
       uploadedImages.push(url);
     }
@@ -95,12 +109,14 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
 
   const createProduct = async (collectionRef: any, productInfo: any) => {
     try {
-      await addDoc(collectionRef, productInfo);
+      const { id, ...productDataWithoutId } = productInfo; // Elimina el campo 'id' del objeto 'productInfo'
+      await addDoc(collectionRef, productDataWithoutId); // Agrega el documento a la colección sin el campo 'id'
     } catch (error) {
       console.error("Error creating product:", error);
       throw error;
     }
   };
+  
 
   const updateProduct = async (
     collectionRef: any,
@@ -121,13 +137,13 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
     const productsCollection = collection(db, "products");
 
     try {
-      const uploadedImages = await uploadImages();
+      const uploadedImages = await uploadImages(); // Subir imágenes al almacenamiento
 
       const productInfo = {
         ...newProduct,
         unit_price: +newProduct.unit_price,
         stock: +newProduct.stock,
-        images: uploadedImages,
+        images: uploadedImages, // Asignar las URLs de las imágenes al producto
       };
 
       if (productSelected) {
@@ -158,7 +174,12 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
   };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="md"
+    style={{
+      height: "100vh", // Ocupa el 100% de la altura de la vista del dispositivo
+      overflowY: "auto", // Habilita el scroll vertical si es necesario
+    }}
+    >
       <Paper elevation={3} style={{ padding: "20px" }}>
         <form
           onSubmit={handleSubmit}
@@ -217,40 +238,42 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
             </Grid>
 
             <Grid item xs={12}>
-  <div style={{ maxHeight: "300px", overflowY: "scroll" }}>
-    {files.length > 0 && (
-      <div>
-        {files.map((file, index) => (
-          <Card key={index} style={{ maxWidth: 345 }}>
-            <CardMedia
-              component="img"
-              height="auto" // Ajustar automáticamente la altura de la imagen
-              image={URL.createObjectURL(file)}
-              alt={`Preview ${index + 1}`}
-            />
-            <CardContent>
-              <p>{`Preview ${index + 1}`}</p>
-            </CardContent>
-            <CardActions>
-              <Button
-                size="small"
-                variant="contained"
-                color="secondary"
-                onClick={() => {
-                  const updatedFiles = [...files];
-                  updatedFiles.splice(index, 1);
-                  setFiles(updatedFiles);
-                }}
-              >
-                Eliminar
-              </Button>
-            </CardActions>
-          </Card>
-        ))}
-      </div>
-    )}
-  </div>
-</Grid>
+              <div style={{ maxHeight: "600px", overflowY: "scroll" }}>
+                {files.length > 0 && (
+                  <div>
+                    {files.map((file, index) => (
+                      <Card key={index} style={{ maxWidth: 345 }}>
+                        <CardMedia
+                          component="img"
+                          height="140"
+                          image={URL.createObjectURL(file)}
+                          alt={`Vista Previa ${index + 1}`}
+                          style={{ objectFit: "contain" }} // Añade este estilo para ajustar la imagen en dispositivos móviles
+                        />
+                        <CardContent>
+                          <p>{`Vista Previa ${index + 1}`}</p>
+                        </CardContent>
+                        <CardActions>
+                          <Button
+                            size="small"
+                            variant="contained"
+                            color="secondary"
+                            onClick={() => {
+                              const updatedFiles = [...files];
+                              updatedFiles.splice(index, 1);
+                              setFiles(updatedFiles);
+                              setSelectedImageCount(selectedImageCount - 1);
+                            }}
+                          >
+                            Eliminar
+                          </Button>
+                        </CardActions>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </Grid>
 
             <Grid item xs={12}>
               <Button
@@ -260,6 +283,13 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
               >
                 Subir foto
               </Button>
+              {selectedImageCount >= 1 && selectedImageCount < 8 && (
+                <p>Puedes subir otra foto.</p>
+              )}
+
+              {selectedImageCount === 8 && (
+                <p>Llegaste al máximo de fotos permitido.</p>
+              )}
               <input
                 ref={fileInputRef}
                 type="file"

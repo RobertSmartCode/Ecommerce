@@ -14,7 +14,8 @@ const style: React.CSSProperties = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: "90%", // Cambiamos el ancho a un valor relativo
+  maxWidth: "400px", // Establecemos un ancho máximo
   backgroundColor: "background.paper",
   border: "2px solid #000",
   boxShadow: "24px",
@@ -31,8 +32,6 @@ interface Product {
   images: string[];
 }
 
-
-
 const Dashboard: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isChange, setIsChange] = useState<boolean>(false);
@@ -48,11 +47,11 @@ const Dashboard: React.FC = () => {
         return {
           id: productDoc.id,
           title: productData.title,
-          description: productData.description, 
+          description: productData.description,
           unit_price: productData.unit_price,
           stock: productData.stock,
-          category: productData.category, 
-          images: productData.images, 
+          category: productData.category,
+          images: productData.images,
         };
       });
       setProducts(newArr);
@@ -65,7 +64,9 @@ const Dashboard: React.FC = () => {
 
   const updateShipment = async () => {
     if (shipmentCost !== null) {
-      await updateDoc(doc(db, "shipment", "HxMuNKLUglVoHjAyosML"), { cost: shipmentCost });
+      await updateDoc(doc(db, "shipment", "HxMuNKLUglVoHjAyosML"), {
+        cost: shipmentCost,
+      });
       setOpen(false);
     }
   };
@@ -73,7 +74,7 @@ const Dashboard: React.FC = () => {
   return (
     <div>
       <Button variant="contained" onClick={() => setOpen(true)}>
-        Costo de envio
+        Costo de envío
       </Button>
       <Modal
         open={open}

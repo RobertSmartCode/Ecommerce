@@ -9,7 +9,7 @@ import useStyles from './ItemListStyles';
 
 interface Product {
   id: string;
-  image: string;
+  images: string[];
   title: string;
   unit_price: number;
   stock: number;
@@ -39,7 +39,7 @@ const ItemListContainer: React.FC = () => {
       {products.map((product) => (
         <Grid item xs={6} sm={6} md={6} lg={6} key={product.id}>
           <Card className={classes.product}>
-            <img src={product.image} alt={product.title} className={classes.productImage} />
+            <img src={product.images[0]} alt={product.title} className={classes.productImage} />
             <CardContent>
               <Typography variant="subtitle1" gutterBottom className={classes.productTitle}>
                 {product.title}

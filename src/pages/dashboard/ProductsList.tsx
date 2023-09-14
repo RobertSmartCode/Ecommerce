@@ -1,4 +1,4 @@
-import { Button, IconButton, Modal, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Table } from "@mui/material";
+import { Button, IconButton, Modal, TableBody, TableCell, TableContainer, TableHead, Paper, TableRow, Table } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { db } from "../../firebase/firebaseConfig";
@@ -6,6 +6,8 @@ import { deleteDoc, doc } from "firebase/firestore";
 import { useState } from "react";
 import Box from "@mui/material/Box";
 import ProductsForm from "./ProductsForm";
+
+
 
 const style: React.CSSProperties = {
   position: "absolute",
@@ -58,17 +60,18 @@ const ProductsList: React.FC<PropsProductosList> = ({ products, setIsChange }) =
       <Button variant="contained" onClick={() => handleOpen(null)}>
         Agregar nuevo
       </Button>
-      <TableContainer component={Paper} sx={{ maxWidth: "100%" }}>
+      <TableContainer component={Paper} sx={{ maxWidth: "345px", overflowX: "scroll" }}>
+     
         <Table aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell align="left">id</TableCell>
-              <TableCell align="left">titulo</TableCell>
-              <TableCell align="left">precio</TableCell>
-              <TableCell align="left">stock</TableCell>
-              <TableCell align="left">imagen</TableCell>
-              <TableCell align="left">categoria</TableCell>
-              <TableCell align="left">acciones</TableCell>
+              <TableCell variant="head" align="center">Id</TableCell>
+              <TableCell variant="head" align="justify">Título</TableCell>
+              <TableCell variant="head" align="justify">Precio</TableCell>
+              <TableCell variant="head" align="justify">Stock</TableCell>
+              <TableCell variant="head" align="justify">Imagen</TableCell>
+              <TableCell variant="head" align="justify">Categoria</TableCell>
+              <TableCell variant="head" align="justify">Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -101,10 +104,10 @@ const ProductsList: React.FC<PropsProductosList> = ({ products, setIsChange }) =
                 </TableCell>
                 <TableCell component="th" scope="row" align="left">
                   <IconButton onClick={() => handleOpen(product)}>
-                    <EditIcon color="primary" />
+                    <EditIcon color="secondary" />
                   </IconButton>
                   <IconButton onClick={() => deleteProduct(product.id)}>
-                    <DeleteForeverIcon color="primary" />
+                    <DeleteForeverIcon color="secondary" />
                   </IconButton>
                 </TableCell>
               </TableRow>
