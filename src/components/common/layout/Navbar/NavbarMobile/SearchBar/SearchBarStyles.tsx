@@ -1,52 +1,142 @@
-import { makeStyles } from "@mui/styles";
+import React, { useState } from 'react';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import CloseIcon from "@mui/icons-material/Close";
+import IconButton from '@mui/material/IconButton';
+import Drawer from '@mui/material/Drawer';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import { useContext } from 'react';
+import { CartContext } from '../../../../../../context/CartContext';
+import { Link } from 'react-router-dom';
 
+interface SearchBarProps {
+  toggleSearch: () => void;
+  isSearchOpen: boolean;
+}
 
-const useStyles = makeStyles((theme:any) => ({
-  searchContainer: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "80%", 
-    margin: "0 auto",
-    background: theme.palette.secondary.main,
-    borderRadius: "8px",
-    border: `1px solid ${theme.palette.secondary.main}`,
-  },
-  searchInput: {
-    color: theme.palette.text.secondary,
-    border: `1px solid ${theme.palette.secondary.main}`,
-    background: theme.palette.primary.main,
-    borderRadius: "8px 0 0 8px",
-    padding: "8px",
-  },
-  searchButton: {
-    background: theme.palette.secondary.main,
-    borderRadius: "0 4px 4px 0",
-  },
-  searchDrawer: {
-    width: "100%",
-    maxWidth: "411px",
-    background:theme.palette.primary.main,
-  },
-  topBar: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "12px 8px", // Aumenta el padding vertical
-    backgroundColor: theme.palette.secondary.main, // Fondo negro
-    color: theme.palette.primary.main, 
-    marginBottom: theme.spacing(5),   
-  },
-  closeButton: {
-    marginRight: "2px", // Espacio entre CloseIcon y la palabra "Buscar"
-    marginLeft: "0",
-    fontSize: "24px", // Ajusta el tamaño del ícono CloseIcon
-  },
-  searchText: {
-    fontSize: "20px", // Ajusta el tamaño de la palabra "Buscar"
-    color: theme.palette.primary.main, 
-  },
-}));
+const SearchBar: React.FC<SearchBarProps> = ({ isSearchOpen, toggleSearch }) => {
+  const [cartOpen, setCartOpen] = useState(false);
 
+  const { cart, clearCart, deleteById, getTotalPrice } = useContext(CartContext) ?? {};
 
-export default useStyles;
+  const handleCartClick = () => {
+    setCartOpen(!cartOpen);
+  };
+
+  let total = getTotalPrice ? getTotalPrice() : 0;
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "80%",
+        margin: "0 auto",
+        background: "#3F51B5",
+        borderRadius: "8px",
+        border: "1px solid #3F51B5",
+      }}
+    >
+      <IconButton
+        color="primary"
+        aria-label="shopping cart"
+        onClick={handleCartClick}
+        sx={{
+          background: "#3F51B5",
+          color: "#FFFFFF",
+        }}
+      >
+        <ShoppingCartIcon
+          sx={{
+            color: "#FFFFFF",
+          }}
+        />
+        <span
+          style={{
+            color: "#FFFFFF",
+            fontSize: "1.1rem",
+            marginTop: "-20px",
+          }}
+        >
+          0
+        </span>
+      </IconButton>
+
+      <Drawer
+        anchor="right"
+        open={cartOpen}
+        onClose={() => setCartOpen(false)}
+        sx={{
+          width: "100%",
+          maxWidth: "411px",
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '12px 8px',
+            background: "#FFFFFF",
+            color: "#000",
+            marginBottom: "5px",
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: '20px',
+              color: "#000",
+              marginLeft: '24px',
+            }}
+          >
+            Carrito de Compras
+          </Typography>
+          <IconButton
+            color="primary"
+            aria-label="close"
+            onClick={handleCartClick}
+            sx={{
+              marginRight: '2px',
+              marginLeft: '0',
+              fontSize: '24px',
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Box>
+
+        <Box
+          sx={{
+            padding: "16px",
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              fontSize: '1.5rem',
+              marginBottom: "16px",
+            }}
+          >
+            Carrito de compras
+          </Typography>
+          <Typography
+            sx={{
+              fontSize: '1rem',
+              marginTop: "16px",
+            }}
+          >
+            Total: $0
+          </Typography>
+          <Link to="/checkout">Ir al checkout</Link>
+          <button onClick={clearCart}>Limpiar Carrito</button>
+        </Box>
+      </Drawer>
+    </Box>
+  );
+};
+
+export default SearchBar;

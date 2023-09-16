@@ -19,7 +19,17 @@ import MobileLogo from "./MobileLogo/MobileLogo";
 import SearchBar from "./SearchBar/SearchBar";
 import MobileCart from './ MobileCart/MobileCart';
 
-
+// Define colores personalizados
+const customColors = {
+  primary: {
+    main: '#000',
+    contrastText: '#000',
+  },
+  secondary: {
+    main: '#fff',
+    contrastText: '#FFFFFF',
+  },
+};
 
 
 const NavbarMobile = (props:any) => {
@@ -75,7 +85,8 @@ const cartItemCount = 0; //
         ref={appBarRef} 
         sx={{
           width: "100%",
-          zIndex: 1 
+          zIndex: 1,
+          backgroundColor: customColors.secondary.main // Aquí se le cambia el color al fondo le navbar
         }}
       >
        <Toolbar
@@ -97,7 +108,7 @@ const cartItemCount = 0; //
       edge="start"
       onClick={handleMenuToggle}
     >
-  {isMenuOpen ? <CloseIcon color="secondary" /> : <MenuIcon color="secondary" />}
+  {isMenuOpen ? <CloseIcon sx={{ color: customColors.primary.main }} /> : <MenuIcon sx={{ color: customColors.primary.main }} />}
 </IconButton>
 
                             {/* Logo de la Empresa */}
@@ -110,7 +121,7 @@ const cartItemCount = 0; //
 
                            {/* Campo de búsqueda */}
    <IconButton
-     color="secondary"
+     sx={{ color: customColors.primary.main }}
      aria-label="search"
      onClick={toggleSearch}
     >

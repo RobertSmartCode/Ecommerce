@@ -2,10 +2,8 @@ import React, { useEffect, useState } from "react";
 import { db } from "../../firebase/firebaseConfig";
 import { getDocs, collection } from "firebase/firestore";
 import { Link } from "react-router-dom";
-import { Grid, Card, CardContent, Typography, Button, IconButton } from "@mui/material";
+import { Grid, Card, CardContent, Typography, Button, IconButton, Box } from "@mui/material";
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import useStyles from './ItemListStyles';
-
 
 interface Product {
   id: string;
@@ -16,9 +14,6 @@ interface Product {
 }
 
 const ItemListContainer: React.FC = () => {
-
-  const classes = useStyles();
-
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -34,50 +29,114 @@ const ItemListContainer: React.FC = () => {
       .catch((err) => console.log(err));
   }, []);
 
+  // Colores personalizados
+  const customColors = {
+    primary: {
+      main: '#000',
+      contrastText: '#000',
+    },
+    secondary: {
+      main: '#fff',
+      contrastText: '#fff',
+    },
+  };
+
+  // Estilos con enfoque sx
+  const containerStyles = {
+    padding: '8px',
+  };
+
+  const productStyles = {
+    border: "1px solid gray",
+    padding: '8px',
+    marginBottom: '8px',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    textAlign: "center",
+    backgroundColor: customColors.secondary.main,
+    color: customColors.primary.main,
+  };
+
+  const productImageStyles = {
+    width: "100%", 
+    marginBottom: '8px',
+    borderBottom: "1px solid #000",
+  };
+  
+
+  const productTitleStyles = {
+    fontSize: "1rem",
+    fontWeight: "bold",
+  };
+
+  const productPriceStyles = {
+    fontSize: "1.2rem",
+    color: customColors.primary.main,
+    marginBottom: '16px',
+  };
+
+  const productDetailStyles = {
+    backgroundColor: customColors.secondary.main,
+    color: customColors.primary.main,
+    border: `2px solid ${customColors.primary.main}`,
+    borderRadius: '50%',
+    padding: '8px',
+  };
+
+  const iconStyles = {
+    fontSize: '1rem',
+  };
+
+  const productCartStyles = {
+    backgroundColor:customColors.primary.main,
+    color:customColors.secondary.main,
+  };
+
+  const buttonContainerStyles = {
+    display: "flex",
+    gap: '8px',
+    marginTop: '16px',
+    marginLeft: '32px',
+    marginRight: '32px',
+    marginBottom: '0px',
+  };
+
   return (
-    <Grid container spacing={1} className={classes.container}>
+    <Grid container spacing={1} sx={containerStyles}>
       {products.map((product) => (
         <Grid item xs={6} sm={6} md={6} lg={6} key={product.id}>
-          <Card className={classes.product}>
-            <img src={product.images[0]} alt={product.title} className={classes.productImage} />
+          <Card sx={productStyles}>
+          <img src={product.images[0]} alt={product.title} style={productImageStyles} />
             <CardContent>
-              <Typography variant="subtitle1" gutterBottom className={classes.productTitle}>
+              <Typography variant="subtitle1" gutterBottom sx={productTitleStyles}>
                 {product.title}
               </Typography>
-              <Typography variant="subtitle2" color="textSecondary" className={classes.productPrice}>
+              <Typography variant="subtitle2" color="textSecondary" sx={productPriceStyles}>
                 Precio: ${product.unit_price}
               </Typography>
-              <div className={classes.buttonContainer}>
-                  <Button
-                    component={Link}
-                    to={`/cart`}
-                    className={classes.productCart}
-                    variant="contained"
-                    color="secondary"
-                    size="small"
-                  >
-                    Comprar
-                  </Button>
-                  {/* Icono del Ojo Aquí se cambian los colores  */}
-                  <IconButton
-                    component={Link}
-                    to={`/itemDetail/${product.id}`}
-                    className={classes.productDetail}
-                    aria-label="Ver"
-                    color="secondary"
-                    size="small"
-                    sx={{
-                      backgroundColor: "#fff", 
-                      color: "#000",
-                      border: "2px solid #000",
-                      borderRadius: '50%',
-                      padding: 1,
-                    }}
-                  >
-                    <VisibilityIcon  sx={{ fontSize: '1rem' }}  />
-                  </IconButton>
-            </div>
-
+              <Box sx={buttonContainerStyles}>
+                <Button
+                  component={Link}
+                  to={`/cart`}
+                  variant="contained"
+                  color="primary"
+                  size="small"
+                  sx={productCartStyles}
+                >
+                  Comprar
+                </Button>
+                <IconButton
+                  component={Link}
+                  to={`/itemDetail/${product.id}`}
+                  aria-label="Ver"
+                  color="secondary"
+                  size="small"
+                  sx={productDetailStyles}
+                >
+                  <VisibilityIcon sx={iconStyles} />
+                </IconButton>
+              </Box>
             </CardContent>
           </Card>
         </Grid>

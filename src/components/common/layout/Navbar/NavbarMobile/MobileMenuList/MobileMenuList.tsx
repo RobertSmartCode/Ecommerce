@@ -7,7 +7,6 @@ import {
   ListItemText,
   SvgIcon,
   SwipeableDrawer,
-  useTheme
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ShopIcon from "@mui/icons-material/Shop";
@@ -15,12 +14,20 @@ import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Link, useNavigate } from "react-router-dom";
 import { menuItems } from "../../../../../../router/navigation";
-import useStyles from './MobileMenuListStyles';
-
-
 import { logout } from "../../../../../../firebase/firebaseConfig";
 import { AuthContext } from "../../../../../../context/AuthContext";
 
+// Define colores personalizados
+const customColors = {
+  primary: {
+    main: '#000',
+    contrastText: '#000',
+  },
+  secondary: {
+    main: '#fff',
+    contrastText: '#FFFFFF',
+  },
+};
 
 interface MobileMenuListProps {
   handleMenuToggle: () => void;
@@ -35,21 +42,18 @@ const MobileMenuList: React.FC<MobileMenuListProps> = ({
   container,
   Top
 }) => {
-
   const { logoutContext, isLogged, user } = useContext(AuthContext)!;
   const rolAdmin = import.meta.env.VITE_ROL_ADMIN;
-  const classes = useStyles();
-  const theme = useTheme();
-  const primaryColor = theme.palette.primary.main;
-  
+
+
   const navigate = useNavigate();
- 
+
   const handleLogout = () => {
     logout();
     logoutContext();
     navigate("/login");
   };
-  
+
   return (
     <SwipeableDrawer
       anchor="left"
@@ -64,7 +68,7 @@ const MobileMenuList: React.FC<MobileMenuListProps> = ({
           boxSizing: "border-box",
           width: 411,
           top: Top,
-          backgroundColor: primaryColor,
+          backgroundColor: customColors.primary.main, // Usando el color personalizado
           height: "100%",
           zIndex: 1300,
         },
@@ -77,7 +81,7 @@ const MobileMenuList: React.FC<MobileMenuListProps> = ({
               <Link key={id} to={path} onClick={handleMenuToggle}>
                 <ListItem disablePadding>
                   <ListItemButton>
-                    <ListItemIcon sx={{ color: theme.palette.text.primary }}>
+                    <ListItemIcon sx={{ color: customColors.secondary.contrastText }}> {/* Usando el color personalizado */}
                       <SvgIcon>
                         <Icon />
                       </SvgIcon>
@@ -85,7 +89,7 @@ const MobileMenuList: React.FC<MobileMenuListProps> = ({
                     <ListItemText
                       primary={title}
                       primaryTypographyProps={{
-                        className: classes.listItemText,
+                        sx: { color: customColors.secondary.contrastText }, // Usando el color personalizado
                       }}
                     />
                   </ListItemButton>
@@ -99,12 +103,12 @@ const MobileMenuList: React.FC<MobileMenuListProps> = ({
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <LoginIcon sx={{ color: theme.palette.text.primary }} />
+                    <LoginIcon sx={{ color: customColors.secondary.contrastText }} /> {/* Usando el color personalizado */}
                   </ListItemIcon>
                   <ListItemText
                     primary={"Iniciar sesión"}
                     primaryTypographyProps={{
-                      className: classes.listItemText,
+                      sx: { color: customColors.secondary.contrastText }, // Usando el color personalizado
                     }}
                   />
                 </ListItemButton>
@@ -117,12 +121,12 @@ const MobileMenuList: React.FC<MobileMenuListProps> = ({
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <DashboardIcon sx={{ color: theme.palette.text.primary }} />
+                    <DashboardIcon sx={{ color: customColors.secondary.contrastText }} /> {/* Usando el color personalizado */}
                   </ListItemIcon>
                   <ListItemText
                     primary={"Dashboard"}
                     primaryTypographyProps={{
-                      className: classes.listItemText,
+                      sx: { color: customColors.secondary.contrastText }, // Usando el color personalizado
                     }}
                   />
                 </ListItemButton>
@@ -130,17 +134,17 @@ const MobileMenuList: React.FC<MobileMenuListProps> = ({
             </Link>
           )}
 
-          {isLogged && user.rol !== rolAdmin &&  (
+          {isLogged && user.rol !== rolAdmin && (
             <Link to="/user-orders" onClick={handleMenuToggle}>
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <ShopIcon sx={{ color: theme.palette.text.primary }} />
+                    <ShopIcon sx={{ color: customColors.secondary.contrastText }} /> {/* Usando el color personalizado */}
                   </ListItemIcon>
                   <ListItemText
                     primary={"Mis compras"}
                     primaryTypographyProps={{
-                      className: classes.listItemText,
+                      sx: { color: customColors.secondary.contrastText }, // Usando el color personalizado
                     }}
                   />
                 </ListItemButton>
@@ -152,12 +156,12 @@ const MobileMenuList: React.FC<MobileMenuListProps> = ({
             <ListItem disablePadding onClick={handleLogout}>
               <ListItemButton>
                 <ListItemIcon>
-                  <LogoutIcon sx={{ color: theme.palette.text.primary }} />
+                  <LogoutIcon sx={{ color: customColors.secondary.contrastText }} /> {/* Usando el color personalizado */}
                 </ListItemIcon>
                 <ListItemText
                   primary={"Cerrar sesión"}
                   primaryTypographyProps={{
-                    className: classes.listItemText,
+                    sx: { color: customColors.secondary.contrastText }, // Usando el color personalizado
                   }}
                 />
               </ListItemButton>

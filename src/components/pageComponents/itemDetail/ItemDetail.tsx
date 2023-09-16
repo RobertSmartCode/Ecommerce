@@ -2,17 +2,16 @@ import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../../../firebase/firebaseConfig";
 import { getDoc, collection, doc } from "firebase/firestore";
-import { Button, Typography, CardContent, Card, CardMedia, CardActions } from "@mui/material";
+import { Button, Typography, CardContent, Card, CardActions, Box } from "@mui/material";
 import { CartContext } from "../../../context/CartContext";
-
-import useStyles from './ItemDetailStyles';
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 const ItemDetail: React.FC = () => {
-  const classes = useStyles();
   const { id } = useParams<{ id: string | undefined }>();
   const { getQuantityById } = useContext(CartContext)!;
   const [product, setProduct] = useState<any>(null);
-  const [counter, setCounter] = useState<number>(1); // Valor inicial del contador
+  const [counter, setCounter] = useState<number>(1);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -40,7 +39,6 @@ const ItemDetail: React.FC = () => {
       setCounter(counter + 1);
     } else {
       setErrorMessage("Stock máximo alcanzado");
-      // Establece un temporizador para eliminar el mensaje de error después de 3 segundos
       setTimeout(() => {
         setErrorMessage(null);
       }, 500);
@@ -52,7 +50,6 @@ const ItemDetail: React.FC = () => {
       setCounter(counter - 1);
     } else {
       setErrorMessage("No puedes agregar menos de 1 elemento al carrito");
-      // Establece un temporizador para eliminar el mensaje de error después de 3 segundos
       setTimeout(() => {
         setErrorMessage(null);
       }, 500);
@@ -60,29 +57,40 @@ const ItemDetail: React.FC = () => {
   };
 
   return (
-    <div className={classes.container}>
+    <Box sx={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 5,
+    }}>
       <Card
-       sx={{
-        display: { xs: "block" },
-        flexShrink: 0,
-        "& .MuiDrawer-paper": {
-          boxSizing: "border-box",
-          height: "100%",
-          width: "100%", 
-          padding: 0, 
-        },
-      }}
+        sx={{
+          display: "block",
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            boxSizing: "border-box",
+            height: "100%",
+            width: "100%",
+            padding: 0,
+          },
+        }}
       >
-        <CardMedia
-          component="img"
-          alt={product?.title}
-          height="300"
-          image={product?.image}
-          title={product?.title}
-          className={classes.productImage}
-          style={{ borderRadius: "10px" }}
-        />
-        <CardContent className={classes.cardContent}>
+        <Carousel
+          showThumbs={false}
+          dynamicHeight={true}
+          emulateTouch={true} // Habilitar el deslizamiento táctil en dispositivos móviles
+        >
+          {product?.images.map((image: string, index: number) => (
+            <div key={index}>
+              <img
+                src={image}
+                alt={`Imagen ${index + 1}`}
+                style={{ borderRadius: "10px", width: "100%", maxHeight: "400px", objectFit: "contain" }}
+              />
+            </div>
+          ))}
+        </Carousel>
+        <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
           <Typography variant="h5" component="div">
             {product?.title}
           </Typography>
@@ -91,19 +99,11 @@ const ItemDetail: React.FC = () => {
           </Typography>
         </CardContent>
         <CardActions>
-          <Button
-            variant="contained"
-            className={classes.counterButton}
-            onClick={subOne}
-          >
+          <Button variant="contained" sx={{ backgroundColor: 'secondary.main', color: 'primary.main' }} onClick={subOne}>
             -
           </Button>
           <Typography variant="h4">{counter}</Typography>
-          <Button
-            variant="contained"
-            className={classes.counterButton}
-            onClick={addOne}
-          >
+          <Button variant="contained" sx={{ backgroundColor: 'secondary.main', color: 'primary.main' }} onClick={addOne}>
             +
           </Button>
         </CardActions>
@@ -121,7 +121,7 @@ const ItemDetail: React.FC = () => {
           <Typography variant="h6">Ya tienes el máximo en el carrito</Typography>
         )}
       </Card>
-    </div>
+    </Box>
   );
 };
 
