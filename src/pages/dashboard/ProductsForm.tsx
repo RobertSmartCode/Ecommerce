@@ -14,6 +14,8 @@ import {
   Paper,
 } from "@mui/material";
 
+import * as Yup from 'yup';
+
 interface Product {
   id: string;
   title: string;
@@ -22,6 +24,14 @@ interface Product {
   stock: number;
   category: string;
   images: string[];
+  sizes: string[];
+  colors: string[];
+  salesCount: number;
+  featured: boolean;
+  createdAt: string;
+  keywords: string[];
+  discount: number;
+  sku: string; 
 }
 
 interface ProductsFormProps {
@@ -31,6 +41,30 @@ interface ProductsFormProps {
   setProductSelected: (product: Product | null) => void;
   products: Product[];
 }
+
+const getFormattedDate = () => {
+  const currentDate = new Date();
+  const options = { year: "numeric", month: "long", day: "numeric" } as const;
+  return currentDate.toLocaleDateString("es-ES", options);
+};
+
+const productSchema = Yup.object().shape({
+  title: Yup.string().required('El nombre es obligatorio'),
+  description: Yup.string().required('La descripción es obligatoria'),
+  unit_price: Yup.number()
+    .required('El precio es obligatorio')
+    .positive('El precio debe ser positivo')
+    .moreThan(0, 'El precio debe ser mayor que 0'),
+  stock: Yup.number()
+    .required('El stock es obligatorio')
+    .integer('El stock debe ser un número entero')
+    .min(0, 'El stock debe ser mayor o igual a 0'), // Usamos 'min' aquí
+  category: Yup.string().required('La categoría es obligatoria'),
+  sku: Yup.string().required('El SKU es obligatorio'),
+  // Puedes agregar más validaciones según tus necesidades
+});
+
+
 
 const ProductsForm: React.FC<ProductsFormProps> = ({
   handleClose,
@@ -48,7 +82,16 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
     stock: 0,
     category: "",
     images: [],
+    sizes: [],
+    colors: [],
+    salesCount: 0,
+    featured: false,
+    createdAt: getFormattedDate(), 
+    keywords: [], 
+    discount: 0,
+    sku: "", 
   });
+
 
   const [files, setFiles] = useState<File[]>([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -57,6 +100,8 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
   const [selectedImageCount, setSelectedImageCount] = useState<number>(
     productSelected?.images.length || 0
   );
+
+
 
   useEffect(() => {
     if (productSelected) {
@@ -109,14 +154,13 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
 
   const createProduct = async (collectionRef: any, productInfo: any) => {
     try {
-      const { id, ...productDataWithoutId } = productInfo; // Elimina el campo 'id' del objeto 'productInfo'
-      await addDoc(collectionRef, productDataWithoutId); // Agrega el documento a la colección sin el campo 'id'
+      const { id, ...productDataWithoutId } = productInfo;
+      await addDoc(collectionRef, productDataWithoutId);
     } catch (error) {
       console.error("Error creating product:", error);
       throw error;
     }
   };
-  
 
   const updateProduct = async (
     collectionRef: any,
@@ -131,41 +175,61 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const productsCollection = collection(db, "products");
-
-    try {
-      const uploadedImages = await uploadImages(); // Subir imágenes al almacenamiento
-
-      const productInfo = {
-        ...newProduct,
-        unit_price: +newProduct.unit_price,
-        stock: +newProduct.stock,
-        images: uploadedImages, // Asignar las URLs de las imágenes al producto
-      };
-
-      if (productSelected) {
-        await updateProduct(
-          productsCollection,
-          productSelected.id,
-          productInfo
-        );
-      } else {
-        await createProduct(productsCollection, productInfo);
+    // Agregar logs para depuración
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      console.log("handleSubmit - Inicio");
+    
+      try {
+        await productSchema.validate(newProduct, { abortEarly: false });
+    
+        // Resto del código de manejo del formulario si las validaciones pasan
+        const productsCollection = collection(db, "products");
+        const uploadedImages = await uploadImages();
+    
+        const productInfo = {
+          ...newProduct,
+          unit_price: +newProduct.unit_price,
+          stock: +newProduct.stock,
+          images: uploadedImages,
+          keywords: Array.isArray(newProduct.keywords) ? newProduct.keywords.join(', ') : [], 
+        };
+    
+        if (productSelected) {
+          await updateProduct(
+            productsCollection,
+            productSelected.id,
+            productInfo
+          );
+        } else {
+          await createProduct(productsCollection, productInfo);
+        }
+    
+        setFiles([]);
+        setSnackbarMessage("Producto creado/modificado con éxito");
+        setSnackbarOpen(true);
+        setIsChange(true);
+        handleClose();
+      } catch (error) {
+        if (error instanceof Yup.ValidationError) {
+          const validationErrors: { [key: string]: string } = {}; // Especificamos el tipo aquí
+          error.inner.forEach((e) => {
+            if (e.path) { // Verificamos que e.path esté definido antes de acceder a él
+              validationErrors[e.path] = e.message;
+            }
+          });
+          console.error("Errores de validación:", validationErrors);
+          setSnackbarMessage("Por favor, corrige los errores en el formulario.");
+          setSnackbarOpen(true);
+        } else {
+          console.error("Error en handleSubmit:", error);
+          setSnackbarMessage("Error al crear/modificar el producto");
+          setSnackbarOpen(true);
+        }
       }
-
-      setFiles([]);
-      setSnackbarMessage("Producto creado/modificado con éxito");
-      setSnackbarOpen(true);
-      setIsChange(true);
-      handleClose();
-    } catch (error) {
-      setSnackbarMessage("Error al crear/modificar el producto");
-      setSnackbarOpen(true);
-    }
-  };
+    
+      console.log("handleSubmit - Fin");
+    };
 
   const openFileInput = () => {
     if (fileInputRef.current) {
@@ -174,12 +238,7 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
   };
 
   return (
-    <Container maxWidth="md"
-    style={{
-      height: "100vh", // Ocupa el 100% de la altura de la vista del dispositivo
-      overflowY: "auto", // Habilita el scroll vertical si es necesario
-    }}
-    >
+    <Container maxWidth="md" style={{ height: "100vh", overflowY: "auto" }}>
       <Paper elevation={3} style={{ padding: "20px" }}>
         <form
           onSubmit={handleSubmit}
@@ -212,9 +271,27 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
             <Grid item xs={12} sm={6}>
               <TextField
                 variant="outlined"
+                defaultValue={productSelected?.category}
+                label="Categoría"
+                name="category"
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
                 defaultValue={productSelected?.unit_price}
                 label="Precio"
                 name="unit_price"
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
+                defaultValue={productSelected?.discount}
+                label="Descuento"
+                name="discount"
                 onChange={handleChange}
               />
             </Grid>
@@ -227,16 +304,68 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                 onChange={handleChange}
               />
             </Grid>
+            
             <Grid item xs={12} sm={6}>
               <TextField
                 variant="outlined"
-                defaultValue={productSelected?.category}
-                label="Categoría"
-                name="category"
+                defaultValue={productSelected?.sizes.join(", ")}
+                label="Tallas (Separadas por comas)"
+                name="sizes"
                 onChange={handleChange}
               />
             </Grid>
-
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
+                defaultValue={productSelected?.colors.join(", ")}
+                label="Colores (Separados por comas)"
+                name="colors"
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
+                defaultValue={productSelected?.sku}
+                label="SKU"
+                name="sku"
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
+                defaultValue={productSelected?.keywords.join(", ")}
+                label="Palabras clave (Separadas por comas)"
+                name="keywords"
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
+                defaultValue={productSelected?.salesCount}
+                label="Cantidad de ventas"
+                name="salesCount"
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <label>
+                <input
+                  type="checkbox"
+                  name="featured"
+                  checked={newProduct.featured}
+                  onChange={(e) =>
+                    setNewProduct({
+                      ...newProduct,
+                      featured: e.target.checked,
+                    })
+                  }
+                />
+                Producto destacado
+              </label>
+            </Grid>
             <Grid item xs={12}>
               <div style={{ maxHeight: "600px", overflowY: "scroll" }}>
                 {files.length > 0 && (
@@ -248,7 +377,7 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                           height="140"
                           image={URL.createObjectURL(file)}
                           alt={`Vista Previa ${index + 1}`}
-                          style={{ objectFit: "contain" }} // Añade este estilo para ajustar la imagen en dispositivos móviles
+                          style={{ objectFit: "contain" }}
                         />
                         <CardContent>
                           <p>{`Vista Previa ${index + 1}`}</p>
@@ -274,7 +403,6 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                 )}
               </div>
             </Grid>
-
             <Grid item xs={12}>
               <Button
                 variant="contained"
@@ -286,7 +414,6 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
               {selectedImageCount >= 1 && selectedImageCount < 8 && (
                 <p>Puedes subir otra foto.</p>
               )}
-
               {selectedImageCount === 8 && (
                 <p>Llegaste al máximo de fotos permitido.</p>
               )}
@@ -300,7 +427,6 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
               />
               <p>{uploadMessage}</p>
             </Grid>
-
             <Grid item xs={12}>
               {!isLoading && (
                 <Button
@@ -316,7 +442,6 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
           </Grid>
         </form>
       </Paper>
-
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={4000}
