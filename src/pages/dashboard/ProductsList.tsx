@@ -30,6 +30,14 @@ interface Product {
   stock: number;
   category: string;
   images: string[];
+  sizes: string[];
+  colors: string[];
+  salesCount: number;
+  featured: boolean;
+  createdAt: string;
+  keywords: string[];
+  discount: number;
+  sku: string; 
 }
 
 interface PropsProductosList {

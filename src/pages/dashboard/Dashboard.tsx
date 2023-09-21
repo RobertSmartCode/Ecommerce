@@ -21,7 +21,6 @@ const style: React.CSSProperties = {
   boxShadow: "24px",
   padding: 4,
 };
-
 interface Product {
   id: string;
   title: string;
@@ -30,6 +29,14 @@ interface Product {
   stock: number;
   category: string;
   images: string[];
+  sizes: string[];
+  colors: string[];
+  salesCount: number;
+  featured: boolean;
+  createdAt: string;
+  keywords: string[];
+  discount: number;
+  sku: string; 
 }
 
 const Dashboard: React.FC = () => {
@@ -52,6 +59,14 @@ const Dashboard: React.FC = () => {
           stock: productData.stock,
           category: productData.category,
           images: productData.images,
+          sizes: [], // Añade las propiedades faltantes
+          colors: [],
+          salesCount: 0,
+          featured: false,
+          createdAt: "",
+          keywords: [],
+          discount: 0,
+          sku: "",
         };
       });
       setProducts(newArr);
