@@ -1,26 +1,22 @@
-import { Button, IconButton, Modal, TableBody, TableCell, TableContainer, TableHead, Paper, TableRow, Table } from "@mui/material";
+import  { useEffect, useState } from "react";
+import { Button, IconButton, Modal, TableBody, TableCell, TableContainer, TableHead, Paper, TableRow, Table, Drawer, Typography,} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { db } from "../../firebase/firebaseConfig";
-import { deleteDoc, doc } from "firebase/firestore";
-import { useState } from "react";
+
+import {
+  collection,
+  getDocs,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
+
+
 import Box from "@mui/material/Box";
 import ProductsForm from "./ProductsForm";
+import CloseIcon from "@mui/icons-material/Close";
 
 
-
-const style: React.CSSProperties = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "90%", // Ancho responsivo al 90% del contenedor padre
-  maxWidth: "800px", // Máximo ancho de 800px para evitar que la tabla sea demasiado ancha en pantallas grandes
-  backgroundColor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: "24px",
-  padding: 4,
-};
 
 interface Product {
   id: string;
@@ -40,14 +36,41 @@ interface Product {
   sku: string; 
 }
 
-interface PropsProductosList {
-  products: Product[];
-  setIsChange: React.Dispatch<React.SetStateAction<boolean>>;
-}
 
-const ProductsList: React.FC<PropsProductosList> = ({ products, setIsChange }) => {
+const ProductsList = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [productSelected, setProductSelected] = useState<Product | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isChange, setIsChange] = useState<boolean>(false);
+
+
+  useEffect(() => {
+    setIsChange(false);
+    let productsCollection = collection(db, "products");
+    getDocs(productsCollection).then((res) => {
+      const newArr: Product[] = res.docs.map((productDoc) => {
+        const productData = productDoc.data();
+        return {
+          id: productDoc.id,
+          title: productData.title,
+          description: productData.description,
+          unit_price: productData.unit_price,
+          stock: productData.stock,
+          category: productData.category,
+          images: productData.images,
+          sizes: [], // Añade las propiedades faltantes
+          colors: [],
+          salesCount: 0,
+          featured: false,
+          createdAt: "",
+          keywords: [],
+          discount: 0,
+          sku: "",
+        };
+      });
+      setProducts(newArr);
+    });
+  }, [isChange]);
 
   const deleteProduct = (id: string) => {
     deleteDoc(doc(db, "products", id));
@@ -63,11 +86,93 @@ const ProductsList: React.FC<PropsProductosList> = ({ products, setIsChange }) =
     setOpen(true);
   };
 
+
+
+
+  const customColors = {
+    primary: {
+      main: '#000',
+      contrastText: '#000',
+    },
+    secondary: {
+      main: '#fff',
+      contrastText: '#fff',
+    },
+  };
+  
+  const topBarStyles = {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexDirection: "row", 
+    padding: "12px 8px",
+    width: "100%",
+    margin: "0 auto", 
+    backgroundColor: customColors.primary.main,
+    color: customColors.secondary.main,
+  };
+  
+  const closeButtonStyles = {
+    color: customColors.secondary.main,
+    marginRight: '2px',
+    marginLeft: '0',
+    fontSize: '24px',
+  };
+  
+  const textStyles = {
+    fontSize: '20px',
+    color: customColors.secondary.main,
+    marginLeft: '24px',
+  };
+
+  const [listOpen, setListOpen] = useState(false);
+
+  const handleBtnClick = () => {
+    setListOpen(!listOpen);
+  };
+
+
   return (
-    <div>
-      <Button variant="contained" onClick={() => handleOpen(null)}>
-        Agregar nuevo
-      </Button>
+
+
+    <Box>
+    <Button
+      variant="contained"
+      onClick={handleBtnClick}
+      sx={{
+        backgroundColor: customColors.primary.main,
+        color: customColors.secondary.contrastText,
+      }}
+    >
+      Lista de Productos
+    </Button>
+
+    <Drawer
+      anchor="left"
+      open={listOpen}
+      onClose={() => setListOpen(false)}
+      sx={{
+        display: { xs: "block" },
+        flexShrink: 0,
+        "& .MuiDrawer-paper": {
+          boxSizing: "border-box",
+          width: "100%",
+          height: "100%",
+          zIndex: 1300,
+        },
+      }}
+    >
+      <Box sx={topBarStyles}>
+        <Typography sx={textStyles}>Lista de Productos</Typography>
+        <IconButton
+          aria-label="close"
+          onClick={handleBtnClick}
+          sx={closeButtonStyles}
+        >
+          <CloseIcon />
+        </IconButton>
+      </Box>
+
       <TableContainer component={Paper} sx={{ maxWidth: "345px", overflowX: "scroll" }}>
      
         <Table aria-label="simple table">
@@ -130,17 +235,18 @@ const ProductsList: React.FC<PropsProductosList> = ({ products, setIsChange }) =
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <Box >
           <ProductsForm
             handleClose={handleClose}
             setIsChange={setIsChange}
             productSelected={productSelected}
             setProductSelected={setProductSelected}
-            products={products} // Asegúrate de pasar esta propiedad
+            products={products}
           />
         </Box>
       </Modal>
-    </div>
+      </Drawer>
+    </Box>
   );
 };
 
