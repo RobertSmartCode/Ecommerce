@@ -9,10 +9,11 @@ import ShippingMethods from "./ShippingMethods";
 const containerStyles = {
   display: "flex",
   flexDirection: "column",
+  alignItems: "center",
   justifyContent: "start", 
-  alignItems: "center", 
   gap: "16px", 
   textAlign: "center",
+ 
 };
 
 

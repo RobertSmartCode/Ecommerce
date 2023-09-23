@@ -29,7 +29,8 @@ import CloseIcon from "@mui/icons-material/Close";
     sku: string; 
   }
 const ProductAddForm = () => {
-    const [open, setOpen] = useState<boolean>(false);
+  
+   
     const [productSelected, setProductSelected] = useState<Product | null>(null);
     const [products, setProducts] = useState<Product[]>([]);
     const [isChange, setIsChange] = useState<boolean>(false);
@@ -64,7 +65,7 @@ const ProductAddForm = () => {
       }, [isChange]);
 
       const handleClose = () => {
-        setOpen(false);
+        setFormOpen(false);
       };
     
     
