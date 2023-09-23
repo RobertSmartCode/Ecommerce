@@ -9,12 +9,14 @@ import ShippingMethods from "./ShippingMethods";
 const containerStyles = {
   display: "flex",
   flexDirection: "column",
+  justifyContent: "center",
   alignItems: "center",
-  justifyContent: "start", 
-  gap: "16px", 
-  textAlign: "center",
- 
+  marginLeft: "80px", 
+  marginRight: "80px", 
+  gap:"20px"
+
 };
+
 
 
 const Dashboard: React.FC = () => {
@@ -22,7 +24,8 @@ const Dashboard: React.FC = () => {
 
 
   return (
-    <Box sx={containerStyles}>
+    <Box 
+    sx={containerStyles}>
 
       <ProductAddForm />
 
