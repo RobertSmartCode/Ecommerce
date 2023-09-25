@@ -29,7 +29,7 @@ interface Product {
   sizes: string[];
   colors: string[];
   salesCount: number;
-  featured: boolean;
+  // featured: boolean;
   createdAt: string;
   keywords: string[];
   discount: number;
@@ -50,28 +50,30 @@ const ProductsList = () => {
     getDocs(productsCollection).then((res) => {
       const newArr: Product[] = res.docs.map((productDoc) => {
         const productData = productDoc.data();
+  
         return {
           id: productDoc.id,
           title: productData.title,
           description: productData.description,
-          unit_price: productData.unit_price,
-          stock: productData.stock,
           category: productData.category,
+          unit_price: productData.unit_price,
+          discount: productData.discount,
+          stock: productData.stock,
+          sizes: productData.sizes, 
+          colors: productData.colors,
+          sku: productData.sku,
+          keywords: productData.keywords,
+          salesCount: productData.salesCount,
+          // featured: productData.featured,
+          createdAt: productData.createAt,
           images: productData.images,
-          sizes: [], // Añade las propiedades faltantes
-          colors: [],
-          salesCount: 0,
-          featured: false,
-          createdAt: "",
-          keywords: [],
-          discount: 0,
-          sku: "",
         };
       });
       setProducts(newArr);
     });
   }, [isChange]);
 
+  
   const deleteProduct = (id: string) => {
     deleteDoc(doc(db, "products", id));
     setIsChange(true);

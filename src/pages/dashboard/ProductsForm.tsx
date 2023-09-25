@@ -22,18 +22,18 @@ interface Product {
   id: string;
   title: string;
   description: string;
-  unit_price: number;
-  stock: number;
   category: string;
-  images: string[];
+  unit_price: number;
+  discount: number;
+  stock: number;
   sizes: string[];
   colors: string[];
-  salesCount: number;
-  featured: boolean;
-  createdAt: string;
-  keywords: string[];
-  discount: number;
   sku: string;
+  keywords: string[];
+  salesCount: number;
+  // featured: boolean;
+  images: string[];
+  createdAt: string;
 }
 
 
@@ -45,7 +45,7 @@ interface ProductsFormProps {
   products: Product[];
 }
 
-const getFormattedDate = () => {
+const getFormattedDate = (): string => {
   const currentDate = new Date();
   const options = {
     year: "numeric",
@@ -75,6 +75,7 @@ const productSchema = Yup.object().shape({
 
 
 
+
 const ProductsForm: React.FC<ProductsFormProps> = ({
   handleClose,
   setIsChange,
@@ -87,22 +88,30 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
     id: "",
     title: "",
     description: "",
-    unit_price: 0,
-    stock: 0,
     category: "",
-    images: [],
+    unit_price: 0,
+    discount: 0,
+    stock: 0,
     sizes: [],
     colors: [],
-    salesCount: 0,
-    featured: false,
-    createdAt: getFormattedDate(), 
-    keywords: [], 
-    discount: 0,
+    images: [],
     sku: "", 
+    keywords: [], 
+    salesCount: 0,
+    // featured: false,
+    createdAt: getFormattedDate(), 
+    
+    
   });
 
 
-  const [files, setFiles] = useState<File[]>([]);
+ // Estado para las imágenes existentes
+ const [files, setFiles] = useState<File[]>([]);
+
+
+ // Estado para las imágenes recién cargadas desde la computadora
+
+
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [uploadMessage, setUploadMessage] = useState<string>("");
@@ -113,21 +122,42 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
 
 
   useEffect(() => {
-    if (productSelected) {
-      setFiles([]);
-    }
-  }, [productSelected]);
+    const loadImages = () => {
+      if (productSelected) {
+        setFiles(productSelected.images.map((imageUrl) => new File([], imageUrl)));
+      } else {
+        setFiles(newProduct.images.map((imageUrl) => new File([], imageUrl)));
+      }
+    };
+  
+    loadImages();
+  }, [productSelected, newProduct]);
+  
+  
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
       if (
         selectedFiles.length + selectedImageCount <= 8 &&
         selectedFiles.length + selectedImageCount >= 1
       ) {
-        setFiles([...files, ...selectedFiles]);
+        const updatedFiles = [...files, ...selectedFiles];
+        setFiles(updatedFiles);
         setSelectedImageCount(selectedImageCount + selectedFiles.length);
         setUploadMessage("");
+        if (productSelected) {
+          const updatedProductSelected = {
+            ...productSelected,
+            images: [
+              ...productSelected.images,
+              ...selectedFiles.map((file) => URL.createObjectURL(file)),
+            ],
+          };
+          setProductSelected(updatedProductSelected);
+        }
+  
+        
       } else {
         setUploadMessage(
           "Llegaste al límite de fotos permitido (mínimo 1, máximo 8)."
@@ -135,28 +165,54 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
       }
     }
   };
+  
+
+
+// Función para manejar la eliminación de imágenes existentes
+
+const handleRemoveImage = (index: number) => {
+  const updatedFiles = [...files];
+  updatedFiles.splice(index, 1);
+  setFiles(updatedFiles);
+
+  if (productSelected) {
+    const updatedProductSelected = {
+      ...productSelected,
+      images: [...productSelected.images.slice(0, index), ...productSelected.images.slice(index + 1)],
+    };
+    setProductSelected(updatedProductSelected);
+  }
+};
+
+
+  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+  
     if (productSelected) {
       setProductSelected({
         ...productSelected,
         [name]: value,
       });
     } else {
-      setNewProduct({ ...newProduct, [name]: value });
+      setNewProduct({
+        ...newProduct,
+        [name]: value,
+      });
     }
   };
 
+  // Función para subir las imágenes al servidor y obtener las URL
   const uploadImages = async () => {
     const uploadedImages = [];
-
+  
     for (const file of files) {
       setUploadMessage("Cargando el producto...");
       const url = await uploadFile(file);
       uploadedImages.push(url);
     }
-
+  
     setUploadMessage("");
     return uploadedImages;
   };
@@ -184,61 +240,6 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
     }
   };
 
-    // Agregar logs para depuración
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      console.log("handleSubmit - Inicio");
-    
-      try {
-        await productSchema.validate(newProduct, { abortEarly: false });
-    
-        // Resto del código de manejo del formulario si las validaciones pasan
-        const productsCollection = collection(db, "products");
-        const uploadedImages = await uploadImages();
-    
-        const productInfo = {
-          ...newProduct,
-          unit_price: +newProduct.unit_price,
-          stock: +newProduct.stock,
-          images: uploadedImages,
-          keywords: Array.isArray(newProduct.keywords) ? newProduct.keywords.join(', ') : [], 
-        };
-    
-        if (productSelected) {
-          await updateProduct(
-            productsCollection,
-            productSelected.id,
-            productInfo
-          );
-        } else {
-          await createProduct(productsCollection, productInfo);
-        }
-    
-        setFiles([]);
-        setSnackbarMessage("Producto creado/modificado con éxito");
-        setSnackbarOpen(true);
-        setIsChange(true);
-        handleClose();
-      } catch (error) {
-        if (error instanceof Yup.ValidationError) {
-          const validationErrors: { [key: string]: string } = {}; // Especificamos el tipo aquí
-          error.inner.forEach((e) => {
-            if (e.path) { // Verificamos que e.path esté definido antes de acceder a él
-              validationErrors[e.path] = e.message;
-            }
-          });
-          console.error("Errores de validación:", validationErrors);
-          setSnackbarMessage("Por favor, corrige los errores en el formulario.");
-          setSnackbarOpen(true);
-        } else {
-          console.error("Error en handleSubmit:", error);
-          setSnackbarMessage("Error al crear/modificar el producto");
-          setSnackbarOpen(true);
-        }
-      }
-    
-      console.log("handleSubmit - Fin");
-    };
 
   const openFileInput = () => {
     if (fileInputRef.current) {
@@ -246,9 +247,86 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
     }
   };
 
+
+   // Función para manejar el envío del formulario
+   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  
+    try {
+      // Validar el producto, ya sea el nuevo o el editado
+      const productToValidate = productSelected || newProduct;
+      await productSchema.validate(productToValidate, { abortEarly: false });
+  
+      // Subir las imágenes y obtener las URLs
+      const uploadedImages = await uploadImages();
+  
+      // Crear un objeto con la información del producto
+      const productInfo = {
+        ...productToValidate,
+        unit_price: +productToValidate.unit_price,
+        stock: +productToValidate.stock,
+        createdAt: productToValidate.createdAt ?? getFormattedDate(),
+      };
+  
+      const productsCollection = collection(db, "products");
+
+
+
+      if (productSelected) {
+        // Actualizar el producto existente sin duplicar las imágenes
+        productInfo.images = productSelected.images; // Utiliza las imágenes existentes
+        await updateProduct(productsCollection, productSelected.id, productInfo);
+      } else {
+        // Crear un nuevo producto con las imágenes cargadas
+        productInfo.images = [...uploadedImages];
+        await createProduct(productsCollection, productInfo);
+      }
+
+  
+      // Limpiar el estado y mostrar un mensaje de éxito
+      setFiles([]);
+      setSnackbarMessage("Producto creado/modificado con éxito");
+      setSnackbarOpen(true);
+      setIsChange(true);
+      handleClose();
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        // Manejar errores de validación aquí
+        const validationErrors: { [key: string]: string } = {};
+        error.inner.forEach((e) => {
+          if (e.path) {
+            validationErrors[e.path] = e.message;
+          }
+        });
+        console.error("Errores de validación:", validationErrors);
+        setSnackbarMessage("Por favor, corrige los errores en el formulario.");
+        setSnackbarOpen(true);
+      } else {
+        // Manejar otros errores aquí
+        console.error("Error en handleSubmit:", error);
+        setSnackbarMessage("Error al crear/modificar el producto");
+        setSnackbarOpen(true);
+      }
+    }
+  };
+  
+  
+
   return (
   
-        <Container maxWidth="md" style={{ height: "100vh", overflowY: "auto" }}>
+        <Container 
+
+        maxWidth="xs"
+        sx={{
+          height: "100vh",
+          overflowY: "auto",
+          marginLeft: "auto",
+          marginRight: "auto", 
+          padding: "20px", 
+          border: "1px solid #ccc", 
+        }}
+       
+        >
           <Paper elevation={3} style={{ padding: "20px" }}>
             <form
               onSubmit={handleSubmit}
@@ -256,6 +334,8 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                 width: "100%",
                 display: "flex",
                 flexDirection: "column",
+                marginLeft: "40px", 
+                marginRight: "40px",
                 gap: "20px",
               }}
             >
@@ -263,7 +343,7 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-                    defaultValue={productSelected?.title}
+                    defaultValue={productSelected ? productSelected.title : newProduct.title}
                     label="Nombre"
                     name="title"
                     onChange={handleChange}
@@ -272,7 +352,8 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-                    defaultValue={productSelected?.description}
+                    defaultValue={productSelected ? productSelected.description : newProduct.description}
+  
                     label="Descripción"
                     name="description"
                     onChange={handleChange}
@@ -281,7 +362,9 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-                    defaultValue={productSelected?.category}
+                   
+                    defaultValue={productSelected ? productSelected.category : newProduct.category}
+  
                     label="Categoría"
                     name="category"
                     onChange={handleChange}
@@ -290,7 +373,9 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-                    defaultValue={productSelected?.unit_price}
+      
+                    defaultValue={productSelected ? productSelected.unit_price: newProduct.unit_price}
+  
                     label="Precio"
                     name="unit_price"
                     onChange={handleChange}
@@ -299,7 +384,9 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-                    defaultValue={productSelected?.discount}
+                   
+                    defaultValue={productSelected ? productSelected.discount : newProduct.discount}
+  
                     label="Descuento"
                     name="discount"
                     onChange={handleChange}
@@ -308,7 +395,9 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-                    defaultValue={productSelected?.stock}
+                  
+                    defaultValue={productSelected ? productSelected.stock : newProduct.stock}
+  
                     label="Stock"
                     name="stock"
                     onChange={handleChange}
@@ -318,8 +407,9 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-                    defaultValue={productSelected?.sizes.join(", ")}
-                    label="Tallas (Separadas por comas)"
+                    
+                    defaultValue={productSelected ? productSelected.sizes : newProduct.sizes}
+                    label="Talles (Separados por comas)"
                     name="sizes"
                     onChange={handleChange}
                   />
@@ -327,7 +417,9 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-                    defaultValue={productSelected?.colors.join(", ")}
+                    
+                    defaultValue={productSelected ? productSelected.colors : newProduct.colors}
+  
                     label="Colores (Separados por comas)"
                     name="colors"
                     onChange={handleChange}
@@ -336,7 +428,9 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-                    defaultValue={productSelected?.sku}
+  
+                    defaultValue={productSelected ? productSelected.sku : newProduct.sku}
+  
                     label="SKU"
                     name="sku"
                     onChange={handleChange}
@@ -345,7 +439,9 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-                    defaultValue={productSelected?.keywords.join(", ")}
+                   
+                    defaultValue={productSelected ? productSelected.keywords: newProduct.keywords}
+  
                     label="Palabras clave (Separadas por comas)"
                     name="keywords"
                     onChange={handleChange}
@@ -354,12 +450,16 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-                    defaultValue={productSelected?.salesCount}
+          
+                    defaultValue={productSelected ? productSelected.salesCount: newProduct.salesCount}
+  
                     label="Cantidad de ventas"
                     name="salesCount"
                     onChange={handleChange}
                   />
                 </Grid>
+
+{/*                 
                 <Grid item xs={12}>
                   <label>
                     <input
@@ -375,44 +475,68 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                     />
                     Producto destacado
                   </label>
-                </Grid>
+                </Grid> */}
+
+
                 <Grid item xs={12}>
                   <div style={{ maxHeight: "600px", overflowY: "scroll" }}>
-                    {files.length > 0 && (
-                      <div>
-                        {files.map((file, index) => (
-                          <Card key={index} style={{ maxWidth: 345 }}>
-                            <CardMedia
-                              component="img"
-                              height="140"
-                              image={URL.createObjectURL(file)}
-                              alt={`Vista Previa ${index + 1}`}
-                              style={{ objectFit: "contain" }}
-                            />
-                            <CardContent>
-                              <p>{`Vista Previa ${index + 1}`}</p>
-                            </CardContent>
-                            <CardActions>
-                              <Button
-                                size="small"
-                                variant="contained"
-                                color="secondary"
-                                onClick={() => {
-                                  const updatedFiles = [...files];
-                                  updatedFiles.splice(index, 1);
-                                  setFiles(updatedFiles);
-                                  setSelectedImageCount(selectedImageCount - 1);
-                                }}
-                              >
-                                Eliminar
-                              </Button>
-                            </CardActions>
-                          </Card>
-                        ))}
-                      </div>
+                    {productSelected ? (
+                      productSelected.images.map((imageUrl, index) => (
+                        <Card key={index} style={{ maxWidth: 345 }}>
+                          <CardMedia
+                            component="img"
+                            height="140"
+                            image={imageUrl}
+                            alt={`Imagen ${index + 1}`}
+                            style={{ objectFit: "contain" }}
+                          />
+                          <CardContent>
+                            <p>{`Vista Previa ${index + 1}`}</p>
+                          </CardContent>
+                          <CardActions>
+                            <Button
+                              size="small"
+                              variant="contained"
+                              color="secondary"
+                              onClick={() => handleRemoveImage(index)}
+                            >
+                              Eliminar
+                            </Button>
+                          </CardActions>
+                        </Card>
+                      ))
+                    ) : (
+                      files.map((file, index) => (
+                        <Card key={index} style={{ maxWidth: 345 }}>
+                          <CardMedia
+                            component="img"
+                            height="140"
+                            image={URL.createObjectURL(file)}
+                            alt={`Vista Previa ${index + 1}`}
+                            style={{ objectFit: "contain" }}
+                          />
+                          <CardContent>
+                            <p>{`Vista Previa ${index + 1}`}</p>
+                          </CardContent>
+                          <CardActions>
+                            <Button
+                              size="small"
+                              variant="contained"
+                              color="secondary"
+                              onClick={() => handleRemoveImage(index)}
+                            >
+                              Eliminar
+                            </Button>
+                          </CardActions>
+                        </Card>
+                      ))
                     )}
                   </div>
                 </Grid>
+
+
+
+
                 <Grid item xs={12}>
                   <Button
                     variant="contained"
@@ -432,11 +556,12 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                     type="file"
                     multiple
                     accept="image/*"
-                    onChange={handleFileChange}
+                    onChange={handleImageChange}
                     style={{ display: "none" }}
                   />
                   <p>{uploadMessage}</p>
-                </Grid>
+                </Grid>                    
+
                 <Grid item xs={12}>
                   {!isLoading && (
                     <Button
