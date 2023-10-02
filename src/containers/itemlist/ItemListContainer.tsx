@@ -1,21 +1,43 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { db } from "../../firebase/firebaseConfig";
 import { getDocs, collection } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import { Grid, Card, CardContent, Typography, Button, IconButton, Box } from "@mui/material";
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { CartContext } from "../../context/CartContext";
+
 
 interface Product {
   id: string;
-  images: string[];
   title: string;
+  description: string;
+  category: string;
   unit_price: number;
+  discount: number;
   stock: number;
+  sizes: string[];
+  colors: string[];
+  sku: string;
+  keywords: string[];
+  salesCount: number;
+  featured: boolean;
+  images: string[];
+  createdAt: string;
+  elasticity: string; 
+  thickness: string; 
+  breathability: string;
+  season: string; 
+  material: string; 
+  details: string;
+}
+
+interface CartItem extends Product {
+  quantity: number; 
 }
 
 const ItemListContainer: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
-
+  const { addToCart } = useContext(CartContext)!; 
   useEffect(() => {
     let refCollection = collection(db, "products");
     getDocs(refCollection)
@@ -102,6 +124,19 @@ const ItemListContainer: React.FC = () => {
     marginBottom: '0px',
   };
 
+  const handleBuyClick = (product: Product) => {
+    // Crear un objeto CartItem basado en el producto con una cantidad inicial de 1
+    const cartItem: CartItem = {
+      ...product,
+      quantity: 1,
+    };
+  
+    // Llama a la función addToCart del contexto para agregar el producto al carrito
+    addToCart(cartItem);
+    console.log(cartItem)
+  };
+  
+
   return (
     <Grid container spacing={1} sx={containerStyles}>
       {products.map((product) => (
@@ -117,12 +152,11 @@ const ItemListContainer: React.FC = () => {
               </Typography>
               <Box sx={buttonContainerStyles}>
                 <Button
-                  component={Link}
-                  to={`/cart`}
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  sx={productCartStyles}
+                   onClick={() => handleBuyClick(product)} 
+                   variant="contained"
+                   color="primary"
+                   size="small"
+                   sx={productCartStyles}
                 >
                   Comprar
                 </Button>

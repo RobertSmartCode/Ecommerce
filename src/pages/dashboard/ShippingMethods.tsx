@@ -13,18 +13,6 @@ import {
 
 import CloseIcon from "@mui/icons-material/Close";
 
-const style: React.CSSProperties = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "90%",
-  maxWidth: "400px",
-  backgroundColor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: "24px",
-  padding: 4,
-};
 
 
 const customColors = {
@@ -140,7 +128,7 @@ const ShippingMethods: React.FC = () => {
           </IconButton>
         </Box>
 
-        <Box sx={style}>
+        <Box >
           <TextField
             label="Costo"
             type="number" // Asegura que solo se ingresen números.

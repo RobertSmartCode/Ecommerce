@@ -54,7 +54,6 @@ const NavbarMobile = (props:any) => {
   setIsCartOpen(!isCartOpen);
 };
 
-const cartItemCount = 0; // 
 
 
   const [appBarHeight, setAppBarHeight] = useState<number | null>(null);
@@ -130,7 +129,7 @@ const cartItemCount = 0; //
 
                            {/* Icono del carrito */}
 
-    <MobileCart itemCount={cartItemCount} onClick={handleCartClick} />
+    <MobileCart  onClick={handleCartClick} />
           
   </div>
   

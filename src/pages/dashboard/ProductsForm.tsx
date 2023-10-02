@@ -12,6 +12,7 @@ import {
   CardMedia,
   Container,
   Paper,
+  MenuItem
 
 } from "@mui/material";
 
@@ -31,9 +32,15 @@ interface Product {
   sku: string;
   keywords: string[];
   salesCount: number;
-  // featured: boolean;
+  featured: boolean;
   images: string[];
   createdAt: string;
+  elasticity: string; 
+  thickness: string; 
+  breathability: string;
+  season: string; 
+  material: string; 
+  details: string; 
 }
 
 
@@ -89,20 +96,25 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
     title: "",
     description: "",
     category: "",
-    unit_price: 0,
-    discount: 0,
-    stock: 0,
+    unit_price: 1000,
+    discount: 10,
+    stock: 10,
     sizes: [],
     colors: [],
     images: [],
-    sku: "", 
-    keywords: [], 
-    salesCount: 0,
-    // featured: false,
-    createdAt: getFormattedDate(), 
-    
-    
+    sku: "",
+    keywords: [],
+    salesCount: 12,
+    featured: false,
+    createdAt: getFormattedDate(),
+    elasticity: "", 
+    thickness: "", 
+    breathability: "", 
+    season: "",
+    material: "", 
+    details: "", 
   });
+  
 
 
  // Estado para las imágenes existentes
@@ -343,139 +355,236 @@ const handleRemoveImage = (index: number) => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-                    defaultValue={productSelected ? productSelected.title : newProduct.title}
+                    value={productSelected ? productSelected.title : newProduct.title}
                     label="Nombre"
                     name="title"
                     onChange={handleChange}
+                    fullWidth
+                    sx={{ width: '75%', margin: 'auto' }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-                    defaultValue={productSelected ? productSelected.description : newProduct.description}
-  
+                    value={productSelected ? productSelected.description : newProduct.description}
                     label="Descripción"
                     name="description"
                     onChange={handleChange}
+                    fullWidth
+                    sx={{ width: '75%', margin: 'auto' }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-                   
-                    defaultValue={productSelected ? productSelected.category : newProduct.category}
-  
+                    value={productSelected ? productSelected.category : newProduct.category}
                     label="Categoría"
                     name="category"
                     onChange={handleChange}
+                    fullWidth
+                    sx={{ width: '75%', margin: 'auto' }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-      
-                    defaultValue={productSelected ? productSelected.unit_price: newProduct.unit_price}
-  
+                    value={productSelected ? productSelected.unit_price: newProduct.unit_price}
                     label="Precio"
                     name="unit_price"
                     onChange={handleChange}
+                    fullWidth
+                    sx={{ width: '75%', margin: 'auto' }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-                   
-                    defaultValue={productSelected ? productSelected.discount : newProduct.discount}
-  
+                    value={productSelected ? productSelected.discount : newProduct.discount}
                     label="Descuento"
                     name="discount"
                     onChange={handleChange}
+                    fullWidth
+                    sx={{ width: '75%', margin: 'auto' }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-                  
-                    defaultValue={productSelected ? productSelected.stock : newProduct.stock}
-  
+                    value={productSelected ? productSelected.stock : newProduct.stock}
                     label="Stock"
                     name="stock"
                     onChange={handleChange}
+                    fullWidth
+                    sx={{ width: '75%', margin: 'auto' }}
                   />
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-                    
-                    defaultValue={productSelected ? productSelected.sizes : newProduct.sizes}
+                    value={productSelected ? productSelected.sizes : newProduct.sizes}
                     label="Talles (Separados por comas)"
                     name="sizes"
                     onChange={handleChange}
+                    fullWidth
+                    sx={{ width: '75%', margin: 'auto' }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-                    
-                    defaultValue={productSelected ? productSelected.colors : newProduct.colors}
-  
+                    value={productSelected ? productSelected.colors : newProduct.colors}
                     label="Colores (Separados por comas)"
                     name="colors"
                     onChange={handleChange}
+                    fullWidth
+                    sx={{ width: '75%', margin: 'auto' }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-  
-                    defaultValue={productSelected ? productSelected.sku : newProduct.sku}
-  
+                    value={productSelected ? productSelected.sku : newProduct.sku}
                     label="SKU"
                     name="sku"
                     onChange={handleChange}
+                    fullWidth
+                    sx={{ width: '75%', margin: 'auto' }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-                   
-                    defaultValue={productSelected ? productSelected.keywords: newProduct.keywords}
-  
+                    value={productSelected ? productSelected.keywords: newProduct.keywords}
                     label="Palabras clave (Separadas por comas)"
                     name="keywords"
                     onChange={handleChange}
+                    fullWidth
+                    sx={{ width: '75%', margin: 'auto' }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="outlined"
-          
-                    defaultValue={productSelected ? productSelected.salesCount: newProduct.salesCount}
-  
+                    value={productSelected ? productSelected.salesCount: newProduct.salesCount}
                     label="Cantidad de ventas"
                     name="salesCount"
                     onChange={handleChange}
+                    fullWidth
+                    sx={{ width: '75%', margin: 'auto' }}
                   />
                 </Grid>
 
-{/*                 
                 <Grid item xs={12}>
-                  <label>
-                    <input
-                      type="checkbox"
-                      name="featured"
-                      checked={newProduct.featured}
-                      onChange={(e) =>
-                        setNewProduct({
-                          ...newProduct,
-                          featured: e.target.checked,
-                        })
-                      }
-                    />
-                    Producto destacado
-                  </label>
-                </Grid> */}
+                  <TextField
+                    variant="outlined"
+                    label="Producto Destacado"
+                    name="featured"
+                    select
+                    fullWidth
+                    sx={{ width: '75%', margin: 'auto' }}
+                    value={productSelected ? productSelected.featured ? "yes" : "no" : newProduct.featured ? "yes" : "no"}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value="yes">Si</MenuItem>
+                    <MenuItem value="no">No</MenuItem>
+                  </TextField>
+                </Grid>
+
+                
+
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    variant="outlined"
+                    label="Elasticidad"
+                    name="elasticity"
+                    select
+                    fullWidth
+                    sx={{ width: '75%', margin: 'auto' }}
+                    value={productSelected ? productSelected.elasticity : newProduct.elasticity}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value="alta">Alta</MenuItem>
+                    <MenuItem value="moderado">Moderado</MenuItem>
+                    <MenuItem value="nula">Nula/Casi Nula</MenuItem>
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    variant="outlined"
+                    label="Espesor"
+                    name="thickness"
+                    select
+                    fullWidth
+                    sx={{ width: '75%', margin: 'auto' }}
+                    value={productSelected ? productSelected.thickness : newProduct.thickness}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value="grueso">Grueso</MenuItem>
+                    <MenuItem value="moderado">Moderado</MenuItem>
+                    <MenuItem value="fino">Fino</MenuItem>
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    variant="outlined"
+                    label="Transpirabilidad"
+                    name="breathability"
+                    select
+                    fullWidth
+                    sx={{ width: '75%', margin: 'auto' }}
+                    value={productSelected ? productSelected.breathability : newProduct.breathability}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value="alta">Alta</MenuItem>
+                    <MenuItem value="moderado">Moderado</MenuItem>
+                    <MenuItem value="nula">Nula/Casi Nula</MenuItem>
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    variant="outlined"
+                    label="Temporada"
+                    name="season"
+                    select
+                    fullWidth
+                    sx={{ width: '75%', margin: 'auto' }}
+                    value={productSelected ? productSelected.season : newProduct.season}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value="primavera/otono">Primavera/Otoño</MenuItem>
+                    <MenuItem value="verano">Verano</MenuItem>
+                    <MenuItem value="invierno">Invierno</MenuItem>
+                  </TextField>
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    variant="outlined"
+                    label="Materiales"
+                    name="material"
+                    fullWidth
+                    sx={{ width: '75%', margin: 'auto' }}
+                    value={productSelected ? productSelected.material : newProduct.material}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    variant="outlined"
+                    label="Detalles"
+                    name="details"
+                    multiline
+                    fullWidth
+                    sx={{ width: '75%', margin: 'auto' }}
+                    rows={4}
+                    value={productSelected ? productSelected.details : newProduct.details}
+                    onChange={handleChange}
+                  />
+                 </Grid>
+
+
+
 
 
                 <Grid item xs={12}>

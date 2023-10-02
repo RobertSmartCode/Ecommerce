@@ -24,6 +24,33 @@ import PaymentMethodsInfo from "./PaymentMethodsInfo";
 import ShippingMethodsInfo from "./ShippingMethodsInfo"; 
 import ProductDetailsInfo from "./ProductDetailsInfo"; 
 
+interface Product {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  unit_price: number;
+  discount: number;
+  stock: number;
+  sizes: string[];
+  colors: string[];
+  sku: string;
+  keywords: string[];
+  salesCount: number;
+  featured: boolean;
+  images: string[];
+  createdAt: string;
+  elasticity: string; 
+  thickness: string; 
+  breathability: string;
+  season: string; 
+  material: string; 
+  details: string;
+}
+
+interface CartItem extends Product {
+  quantity: number; 
+}
 
 const customColors = {
   primary: {
@@ -40,9 +67,18 @@ const customColors = {
 
 const ItemDetail: React.FC = () => {
   const { id } = useParams<{ id: string | undefined }>();
-  const { getQuantityById } = useContext(CartContext)!;
+
+
+  const { getQuantityById, addToCart,getTotalQuantity  } = useContext(CartContext)!;
+
+
   const [product, setProduct] = useState<any>(null);
   const [counter, setCounter] = useState<number>(1);
+
+
+  const [selectedColor, setSelectedColor] = useState<string>(""); 
+  const [selectedSize, setSelectedSize] = useState<string>(""); 
+
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -71,9 +107,30 @@ const ItemDetail: React.FC = () => {
     }
   };
 
-  const handleAddToCart = () => {
-    console.log("Producto agregado al carrito:", product);
+
+  const handleColorChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedColor(event.target.value);
   };
+
+  const handleSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedSize(event.target.value);
+  };
+
+  const handleAddToCart = () => {
+    // Crear un objeto CartItem basado en el producto con la cantidad actual
+    const cartItem: CartItem = {
+      ...product,
+      quantity: counter,
+      color: selectedColor, // Agrega el color seleccionado
+      size: selectedSize,   // Agrega la talla seleccionada
+    };
+  
+    // Llama a la función addToCart del contexto para agregar el producto al carrito
+    addToCart(cartItem);
+  
+    console.log("Producto agregado al carrito:", cartItem);
+  };
+
 
   const colorsArray: string[] = product?.colors
     ? product.colors.split(",").map((color: string) => color.trim())
@@ -224,6 +281,8 @@ const ItemDetail: React.FC = () => {
       </label>
       <select
         id="colorSelect"
+        value={selectedColor}
+        onChange={handleColorChange}
         style={{
           padding: '10px',
           border:  `1px solid ${customColors.primary.main}`,
@@ -255,6 +314,8 @@ const ItemDetail: React.FC = () => {
       </label>
       <select
         id="sizeSelect"
+        value={selectedSize}
+        onChange={handleSizeChange}
         style={{
           padding: '10px',
           border: `1px solid ${customColors.primary.main}`,
@@ -337,16 +398,17 @@ const ItemDetail: React.FC = () => {
 </CardActions>
 
 
-            {getQuantityById(Number(id)) && (
+            {typeof id !== 'undefined' && getQuantityById(id.toString()) && (
               <Typography variant="h6">
-                Ya tienes {getQuantityById(Number(id))} en el carrito
+                Ya tienes {getTotalQuantity()} en el carrito
               </Typography>
             )}
-            {product?.stock === getQuantityById(Number(id)) && (
+            {typeof id !== 'undefined' && product?.stock === getQuantityById(id.toString()) && (
               <Typography variant="h6">
                 Ya tienes el máximo en el carrito
               </Typography>
             )}
+
 
 
           <CardContent>

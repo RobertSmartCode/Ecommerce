@@ -22,19 +22,26 @@ interface Product {
   id: string;
   title: string;
   description: string;
-  unit_price: number;
-  stock: number;
   category: string;
-  images: string[];
+  unit_price: number;
+  discount: number;
+  stock: number;
   sizes: string[];
   colors: string[];
-  salesCount: number;
-  // featured: boolean;
-  createdAt: string;
+  sku: string;
   keywords: string[];
-  discount: number;
-  sku: string; 
+  salesCount: number;
+  featured: boolean;
+  images: string[];
+  createdAt: string;
+  elasticity: string; 
+  thickness: string; 
+  breathability: string;
+  season: string; 
+  material: string; 
+  details: string; 
 }
+
 
 
 const ProductsList = () => {
@@ -53,20 +60,26 @@ const ProductsList = () => {
   
         return {
           id: productDoc.id,
-          title: productData.title,
-          description: productData.description,
-          category: productData.category,
-          unit_price: productData.unit_price,
-          discount: productData.discount,
-          stock: productData.stock,
-          sizes: productData.sizes, 
-          colors: productData.colors,
-          sku: productData.sku,
-          keywords: productData.keywords,
-          salesCount: productData.salesCount,
-          // featured: productData.featured,
-          createdAt: productData.createAt,
-          images: productData.images,
+          title: productData.title || "", 
+          description: productData.description || "",
+          unit_price: productData.unit_price || 0,
+          stock: productData.stock || 0,
+          category: productData.category || "",
+          images: productData.images || [],
+          sizes: productData.sizes || [],
+          colors: productData.colors || [],
+          salesCount: productData.salesCount || 0,
+          featured: productData.featured || false,
+          createdAt: productData.createdAt || "",
+          keywords: productData.keywords || [],
+          discount: productData.discount || 0,
+          sku: productData.sku || "",
+          elasticity: productData.elasticity || "", 
+          thickness: productData.thickness || "", 
+          breathability: productData.breathability || "", 
+          season: productData.season || "",
+          material: productData.material || "", 
+          details: productData.details || "", 
         };
       });
       setProducts(newArr);
@@ -146,7 +159,7 @@ const ProductsList = () => {
         color: customColors.secondary.contrastText,
       }}
     >
-      Lista de Productos
+      Mis Productos
     </Button>
 
     <Drawer
@@ -165,7 +178,7 @@ const ProductsList = () => {
       }}
     >
       <Box sx={topBarStyles}>
-        <Typography sx={textStyles}>Lista de Productos</Typography>
+        <Typography sx={textStyles}>Mis Productos</Typography>
         <IconButton
           aria-label="close"
           onClick={handleBtnClick}
@@ -175,17 +188,17 @@ const ProductsList = () => {
         </IconButton>
       </Box>
 
-      <TableContainer component={Paper} sx={{ maxWidth: "345px", overflowX: "scroll" }}>
+      <TableContainer component={Paper} sx={{ maxWidth: "411px", overflowX: "scroll" }}>
      
         <Table aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell variant="head" align="center">Id</TableCell>
+              {/* <TableCell variant="head" align="center">Id</TableCell> */}
               <TableCell variant="head" align="justify">Título</TableCell>
+              <TableCell variant="head" align="justify">Imagen</TableCell>
               <TableCell variant="head" align="justify">Precio</TableCell>
               <TableCell variant="head" align="justify">Stock</TableCell>
-              <TableCell variant="head" align="justify">Imagen</TableCell>
-              <TableCell variant="head" align="justify">Categoria</TableCell>
+              {/* <TableCell variant="head" align="justify">Categoria</TableCell> */}
               <TableCell variant="head" align="justify">Acciones</TableCell>
             </TableRow>
           </TableHead>
@@ -195,29 +208,29 @@ const ProductsList = () => {
                 key={product.id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
-                <TableCell component="th" scope="row" align="left">
+                {/* <TableCell component="th" scope="row" align="left">
                   {product.id}
-                </TableCell>
-                <TableCell component="th" scope="row" align="left">
+                </TableCell> */}
+                 <TableCell component="th" scope="row" align="center" style={{ width: '100%' }}>
                   {product.title}
-                </TableCell>
-                <TableCell component="th" scope="row" align="left">
-                  {product.unit_price}
-                </TableCell>
-                <TableCell component="th" scope="row" align="left">
-                  {product.stock}
-                </TableCell>
-                <TableCell component="th" scope="row" align="left">
+                 </TableCell>
+                 <TableCell component="th" scope="row" align="center">
                   <img
                     src={product.images && product.images[0] ? product.images[0] : ''}
                     alt=""
-                    style={{ width: "80px", height: "80px", maxWidth: "100%" }}
+                    style={{ width: "100px", height: "80px", maxWidth: "100%" }}
                   />
                 </TableCell>
-                <TableCell component="th" scope="row" align="left">
-                  {product.category}
+                <TableCell component="th" scope="row" align="center">
+                  {product.unit_price}
                 </TableCell>
-                <TableCell component="th" scope="row" align="left">
+                <TableCell component="th" scope="row" align="center">
+                  {product.stock}
+                </TableCell>
+                {/* <TableCell component="th" scope="row" align="center">
+                  {product.category}
+                </TableCell> */}
+                <TableCell component="th" scope="row" align="center">
                   <IconButton onClick={() => handleOpen(product)}>
                     <EditIcon color="secondary" />
                   </IconButton>
@@ -231,13 +244,21 @@ const ProductsList = () => {
         </Table>
       </TableContainer>
 
-      <Modal
+        <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box >
+        <Box sx={{ position: 'relative' }}>
+          <IconButton
+            aria-label="close"
+            onClick={handleClose}
+            sx={{ position: 'absolute', top: '20px', right: '20px' }}
+          >
+            <CloseIcon />
+          </IconButton>
+
           <ProductsForm
             handleClose={handleClose}
             setIsChange={setIsChange}
@@ -247,6 +268,7 @@ const ProductsList = () => {
           />
         </Box>
       </Modal>
+
       </Drawer>
     </Box>
   );

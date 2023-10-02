@@ -11,23 +11,32 @@ import CloseIcon from "@mui/icons-material/Close";
 
 
 
-  interface Product {
-    id: string;
-    title: string;
-    description: string;
-    unit_price: number;
-    stock: number;
-    category: string;
-    images: string[];
-    sizes: string[];
-    colors: string[];
-    salesCount: number;
-    featured: boolean;
-    createdAt: string;
-    keywords: string[];
-    discount: number;
-    sku: string; 
-  }
+interface Product {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  unit_price: number;
+  discount: number;
+  stock: number;
+  sizes: string[];
+  colors: string[];
+  sku: string;
+  keywords: string[];
+  salesCount: number;
+  featured: boolean;
+  images: string[];
+  createdAt: string;
+  elasticity: string; 
+  thickness: string; 
+  breathability: string;
+  season: string; 
+  material: string; 
+  details: string; 
+}
+
+
+
 const ProductAddForm = () => {
   
    
@@ -44,20 +53,26 @@ const ProductAddForm = () => {
             const productData = productDoc.data();
             return {
               id: productDoc.id,
-              title: productData.title,
-              description: productData.description,
-              unit_price: productData.unit_price,
-              stock: productData.stock,
-              category: productData.category,
-              images: productData.images,
-              sizes: [], // Añade las propiedades faltantes
-              colors: [],
-              salesCount: 0,
-              featured: false,
-              createdAt: "",
-              keywords: [],
-              discount: 0,
-              sku: "",
+              title: productData.title || "", 
+              description: productData.description || "",
+              unit_price: productData.unit_price || 0,
+              stock: productData.stock || 0,
+              category: productData.category || "",
+              images: productData.images || [],
+              sizes: productData.sizes || [],
+              colors: productData.colors || [],
+              salesCount: productData.salesCount || 0,
+              featured: productData.featured || false,
+              createdAt: productData.createdAt || "",
+              keywords: productData.keywords || [],
+              discount: productData.discount || 0,
+              sku: productData.sku || "",
+              elasticity: productData.elasticity || "", 
+              thickness: productData.thickness || "", 
+              breathability: productData.breathability || "", 
+              season: productData.season || "",
+              material: productData.material || "", 
+              details: productData.details || "", 
             };
           });
           setProducts(newArr);
@@ -124,32 +139,34 @@ return (
       Agregar Producto
     </Button>
 
-    <Drawer
-      anchor="left"
-      open={formOpen}
-      onClose={() => setFormOpen(false)}
-      sx={{
-        display: { xs: "block" },
-        flexShrink: 0,
-        "& .MuiDrawer-paper": {
-          boxSizing: "border-box",
-          width: "100%",
-          height: "100%",
-          zIndex: 1300,
-        },
-      }}
-    >
-      <Box sx={topBarStyles}>
-        <Typography sx={textStyles}>Agregar Producto</Typography>
-        <IconButton
-          aria-label="close"
-          onClick={handleBtnClick}
-          sx={closeButtonStyles}
-        >
-          <CloseIcon />
-        </IconButton>
-      </Box>
-      <Box>
+     <Drawer
+        anchor="left"
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
+        sx={{
+          display: { xs: "block" },
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            boxSizing: "border-box",
+            width: "100%",
+            
+            height: "100%", 
+            zIndex: 1300,
+          },
+        }}
+      >
+        <Box sx={topBarStyles}>
+          <Typography sx={textStyles}>Agregar Producto</Typography>
+          <IconButton
+            aria-label="close"
+            onClick={handleBtnClick}
+            sx={closeButtonStyles}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        {/* Aplica scroll solo al contenido del formulario */}
+        <Box sx={{ overflowY: 'scroll', height: '100%' }}>
           <ProductsForm
             handleClose={handleClose}
             setIsChange={setIsChange}
@@ -159,6 +176,7 @@ return (
           />
         </Box>
       </Drawer>
+
       </Box>
   );
 };

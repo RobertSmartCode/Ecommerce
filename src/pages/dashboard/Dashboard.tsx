@@ -1,8 +1,10 @@
 import {Box} from "@mui/material";
-import ProductsList from "./ProductsList";
 import ProductAddForm from "./ProductAddForm";
+import ProductsList from "./ProductsList";
+import MyOrders from "./MyOrders";
+import PaymentMethods from "./PaymentMethods";
 import ShippingMethods from "./ShippingMethods";
-
+import StoreData from "./StoreData";
 
 
 
@@ -30,8 +32,15 @@ const Dashboard: React.FC = () => {
       <ProductAddForm />
 
       <ProductsList />
+      
+      <MyOrders />
+     
+      <PaymentMethods/>
 
       <ShippingMethods/>
+
+      <StoreData/>
+
 
     </Box>
   );

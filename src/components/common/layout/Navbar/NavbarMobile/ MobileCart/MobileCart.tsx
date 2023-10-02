@@ -1,23 +1,27 @@
-import { useState } from 'react';
+import { useState,useContext } from 'react';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from '@mui/material/IconButton';
 import Drawer from '@mui/material/Drawer';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { useContext } from 'react';
+
 import { CartContext } from '../../../../../../context/CartContext';
 import { Link } from 'react-router-dom';
 
+
+
+import CartItemList from './CartItemList'; 
+import PaymentMethodSelector from './PaymentMethodSelector';
+
 interface MobileCartProps {
-  itemCount: number;
-  onClick: () => void; // Agrega la prop onClick
+  onClick: () => void; 
 }
 
-const MobileCart: React.FC<MobileCartProps> = ({ itemCount }) => {
+const MobileCart: React.FC<MobileCartProps> = () => {
   const [cartOpen, setCartOpen] = useState(false);
-
-  const { cart, clearCart, deleteById, getTotalPrice } = useContext(CartContext) ?? {};
+  
+  const { cart, clearCart, getTotalPrice, getTotalQuantity } = useContext(CartContext) ?? {};
 
   const handleCartClick = () => {
     setCartOpen(!cartOpen);
@@ -97,7 +101,8 @@ const MobileCart: React.FC<MobileCartProps> = ({ itemCount }) => {
       onClick={handleCartClick}
       >
         <ShoppingCartIcon sx={cartIconStyles} /> 
-        <Typography sx={itemCountStyles}>{itemCount}</Typography>
+        <Typography sx={itemCountStyles}>{getTotalQuantity ? getTotalQuantity() : 0}</Typography>
+        
       </IconButton>
   
       <Drawer
@@ -131,29 +136,22 @@ const MobileCart: React.FC<MobileCartProps> = ({ itemCount }) => {
             Carrito de compras
           </Typography>
           {/* Resto del contenido del carrito */}
+
           {cart?.length ?? 0 > 0 ? (
             <>
-              <ul>
-                {cart?.map((product) => (
-                  <li key={product.id}>
-                    <Box display="flex" alignItems="center">
-                      <Typography>{product.title}</Typography>
-                      <Typography>{product.quantity}</Typography>
-                      <button onClick={() => deleteById && deleteById(product.id)}>
-                        Eliminar
-                      </button>
-                    </Box>
-                  </li>
-                ))}
-              </ul>
+              <CartItemList />
               <Typography>Total: ${total}</Typography>
               <Link to="/checkout">Ir al checkout</Link>
               <button onClick={clearCart}>Limpiar Carrito</button>
+              <PaymentMethodSelector />
             </>
           ) : (
             <Typography>El carrito está vacío</Typography>
           )}
+          
         </Box>
+
+    
       </Drawer>
     </Box>
   );
